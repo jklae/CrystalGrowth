@@ -1,11 +1,9 @@
 #include <GL/freeglut.h>
-#include "SIG2020_1D.h"
+#include "Kobayashi.h"
 
 
-adpd g_simulation(300, 300, 0.006, 0.0);
+Kobayashi g_simulation(300, 300, 0.006);
 
-#define WIDTH 600
-#define TIMESTEP 0.0001
 
 void displayFunc(void);
 void idleFunc(void);
@@ -14,7 +12,7 @@ void keyboardFunc(unsigned char key, int x, int y);
 int main(int argc, char* argv[])
 {
 	glutInit(&argc, argv);
-	glutInitWindowSize(WIDTH, WIDTH);
+	glutInitWindowSize(600, 600);
 	glutInitWindowPosition(100, 100);
 	int id = glutCreateWindow("SIGASIA2020_1D");
 
@@ -33,9 +31,9 @@ void keyboardFunc(unsigned char key, int x, int y)
 {
 	switch (key)
 	{
-	case 's' :
-		g_simulation.update();
-		break;
+		case 's' :
+			g_simulation.update();
+			break;
 	}
 }
 

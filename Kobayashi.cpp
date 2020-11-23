@@ -1,69 +1,15 @@
-#pragma once
-#include <vector>
-#include <assert.h>
+#include "Kobayashi.h"
 
-#include <glm/glm.hpp>
+using namespace std;
 
-#include <iostream>
-#include <ctime>
-
-#define PI 3.1415926535
-#define TIMESTEP 0.0001
-
-
-class adpd
-{
-private :
-	void										initVector2D(std::vector<std::vector<double>>& vec2D);
-	void										computeGradLap(int start, int end);
-	void										evolution();
-	void										printParam(std::vector<std::vector<double>>& vectemp, const char* a, bool exp) const;
-	void										createNuclei(int transX, int transY);
-
-public :
-	int											_nx;
-	int											_ny;
-	double										_dx;
-	double										_dy;
-	double										_dt;
-	double										tau;
-	double										epsilonBar;
-	double										mu;
-	double										K;
-	double										delta;
-	double										anisotropy;
-	double										alpha;
-	double										gamma;
-	double										tEq;
-
-	std::vector<double>							_x;
-	std::vector<double>							_y;
-	std::vector<std::vector<double>>			_t;
-	std::vector<std::vector<double>>			_epsilon;
-	std::vector<std::vector<double>>			_epsilonDeriv;
-	std::vector<std::vector<double>>			_phi;
-	std::vector<std::vector<double>>			_gradPhiX;
-	std::vector<std::vector<double>>			_gradPhiY;
-	std::vector<std::vector<double>>			_lapPhi;
-	std::vector<std::vector<double>>			_lapT;
-
-	std::vector<std::vector<double>>			_angl;
-
-	adpd										() {};
-	adpd										(int nx, int ny, double spacing, double phi);
-
-	void										update();
-
-};
-
-adpd::adpd(int nx, int ny, double spacing, double phi) :
-_nx(nx),
-_ny(ny)
+Kobayashi::Kobayashi(int nx, int ny, double spacing) :
+	_nx(nx),
+	_ny(ny)
 {
 	//
 	_dx = 0.03;
 	_dy = 0.03;
-	_dt = TIMESTEP;
+	_dt = timestep;
 	tau = 0.0003;
 	epsilonBar = 0.01;		// mean of epsilon. scaling factor that determines how much the microscopic front is magnified
 	mu = 1.0;
@@ -92,12 +38,12 @@ _ny(ny)
 	// set the position
 	for (int i = 0; i < _nx; i++)
 	{
-		_x[i] = i * spacing - _nx/2.0 * spacing;
+		_x[i] = i * spacing - _nx / 2.0 * spacing;
 	}
 
 	for (int i = 0; i < _ny; i++)
 	{
-		_y[i] = i * spacing - _ny/2.0 * spacing;
+		_y[i] = i * spacing - _ny / 2.0 * spacing;
 	}
 
 	for (int i = 0; i < _nx; i++)
@@ -113,7 +59,7 @@ _ny(ny)
 
 }
 
-void adpd::createNuclei(int transX, int transY)
+void Kobayashi::createNuclei(int transX, int transY)
 {
 	for (int i = 0; i < _nx; i++)
 	{
@@ -131,22 +77,22 @@ void adpd::createNuclei(int transX, int transY)
 	}
 }
 
-void adpd::initVector2D(std::vector<std::vector<double>>& vec2D)
+void Kobayashi::initVector2D(vector<vector<double>>& vec2D)
 {
 	for (int i = 0; i < _nx; i++)
 	{
-		std::vector<double> tmp;
+		vector<double> tmp;
 		tmp.resize(_ny);
 
 		vec2D.push_back(tmp);
 	}
 }
 
-void adpd::computeGradLap(int start, int end)
+void Kobayashi::computeGradLap(int start, int end)
 {
 #pragma omp parallel num_threads(24)
 	{
-		#pragma omp for schedule(guided)
+#pragma omp for schedule(guided)
 		for (int k = 0; k < _nx * _ny; k++)
 		{
 			int i = k / _nx;
@@ -184,18 +130,18 @@ void adpd::computeGradLap(int start, int end)
 
 			if (_gradPhiX[i][j] == 0)
 				if (_gradPhiY[i][j] < 0)
-					_angl[i][j] = -0.5*PI;
+					_angl[i][j] = -0.5*pi;
 				else if (_gradPhiY[i][j] > 0)
-					_angl[i][j] = 0.5*PI;
+					_angl[i][j] = 0.5*pi;
 
 			if (_gradPhiX[i][j] > 0)
 				if (_gradPhiY[i][j] < 0)
-					_angl[i][j] = 2.0*PI + atan(_gradPhiY[i][j] / _gradPhiX[i][j]);
+					_angl[i][j] = 2.0*pi + atan(_gradPhiY[i][j] / _gradPhiX[i][j]);
 				else if (_gradPhiY[i][j] > 0)
 					_angl[i][j] = atan(_gradPhiY[i][j] / _gradPhiX[i][j]);
 
 			if (_gradPhiX[i][j] < 0)
-				_angl[i][j] = PI + atan(_gradPhiY[i][j] / _gradPhiX[i][j]);
+				_angl[i][j] = pi + atan(_gradPhiY[i][j] / _gradPhiX[i][j]);
 
 
 
@@ -209,11 +155,11 @@ void adpd::computeGradLap(int start, int end)
 	//printParam(_epsilonDeriv, "========_epsilonDeriv===========", true);
 }
 
-void adpd::printParam(std::vector<std::vector<double>>& vectemp, const char* a, bool exp) const
+void Kobayashi::printParam(vector<vector<double>>& vectemp, const char* a, bool exp) const
 {
 	// column index
 	printf("\n%s\n", a);
-	for (int j = 0; j < _ny+1; j++)
+	for (int j = 0; j < _ny + 1; j++)
 	{
 		printf(exp ? "%11d  " : "%8d  ", j);
 	}
@@ -237,11 +183,11 @@ void adpd::printParam(std::vector<std::vector<double>>& vectemp, const char* a, 
 	printf("\n");
 }
 
-void adpd::evolution()
+void Kobayashi::evolution()
 {
-	#pragma omp parallel num_threads(24)
+#pragma omp parallel num_threads(24)
 	{
-		#pragma omp for schedule(guided)
+#pragma omp for schedule(guided)
 		for (int k = 0; k < _nx * _ny; k++)
 		{
 			int i = k / _nx;
@@ -274,7 +220,7 @@ void adpd::evolution()
 				/ _dx;
 			double term3 = gradEpsPowX * _gradPhiX[i][j] + gradEpsPowY * _gradPhiY[i][j];
 
-			double m = alpha / PI * atan(gamma*(tEq - _t[i][j]));
+			double m = alpha / pi * atan(gamma*(tEq - _t[i][j]));
 
 			double oldPhi = _phi[i][j];
 			double oldT = _t[i][j];
@@ -285,13 +231,13 @@ void adpd::evolution()
 					+ oldPhi * (1.0 - oldPhi)*(oldPhi - 0.5 + m))*_dt / tau;
 			_t[i][j] = oldT + _lapT[i][j] * _dt + K * (_phi[i][j] - oldPhi);
 
-			
+
 		}
 
 	}
 }
 
-void adpd::update()
+void Kobayashi::update()
 {
 	clock_t start, finish;
 	/*double duration;
@@ -303,7 +249,7 @@ void adpd::update()
 
 	duration = (double)(finish - start) / CLOCKS_PER_SEC;
 
-	std::cout << duration << "ÃÊ\n";*/
+	cout << duration << "ÃÊ\n";*/
 
 	/*static int step = 1;
 	printf("step %d\n", step);

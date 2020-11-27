@@ -2,7 +2,7 @@
 #include "Kobayashi.h"
 
 
-Kobayashi g_simulation(300, 300, 0.006);
+Kobayashi kobayashi(300, 300, 0.006);
 
 
 void displayFunc(void);
@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
 	glutInit(&argc, argv);
 	glutInitWindowSize(600, 600);
 	glutInitWindowPosition(100, 100);
-	int id = glutCreateWindow("SIGASIA2020_1D");
+	int id = glutCreateWindow("Kobayashi Formulation");
 
 	if (id < 1) {
 		exit(1);
@@ -32,7 +32,7 @@ void keyboardFunc(unsigned char key, int x, int y)
 	switch (key)
 	{
 		case 's' :
-			g_simulation.update();
+			kobayashi.update();
 			break;
 	}
 }
@@ -43,13 +43,13 @@ void displayFunc(void)
 	glPointSize(2.5);
 	glBegin(GL_POINTS);
 
-	for (int i = 0; i < g_simulation._nx; i++)
+	for (int i = 0; i < kobayashi._nx; i++)
 	{
-		for (int j = 0; j < g_simulation._ny; j++)
+		for (int j = 0; j < kobayashi._ny; j++)
 		{
-			glVertex3f(g_simulation._x[i], g_simulation._y[j], 0);
+			glVertex3f(kobayashi._x[i], kobayashi._y[j], 0);
 
-			double color = g_simulation._phi[i][j] / 2.0;
+			double color = kobayashi._phi[i][j] / 2.0;
 			glColor3f(color, color, color);
 		}
 	}
@@ -62,7 +62,7 @@ void displayFunc(void)
 
 void idleFunc(void)
 {
-	g_simulation.update();
+	kobayashi.update();
 	glutPostRedisplay();
 }
 

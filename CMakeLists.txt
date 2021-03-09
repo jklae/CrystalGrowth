@@ -1,17 +1,24 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.19.0)
 
-SET( EXTERNAL_LINK_LIBS freeglut.lib )
+# Set the project name
 SET( PROJECT_NAME Kobayashi )
-
 PROJECT(${PROJECT_NAME})
 
-# Common include / link directories
-INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/freeglut/include/ ${CMAKE_SOURCE_DIR}/glm/)
-LINK_DIRECTORIES( ${CMAKE_SOURCE_DIR}/freeglut/lib/)
+# Define character set as Unicode
+add_definitions(-DUNICODE -D_UNICODE)
+
+# Collect shader files
+FILE( GLOB VS_SHD shader/vertexShader.hlsl )
+FILE( GLOB PS_SHD shader/fragShader.hlsl )
+
+# Set the shader type of files
+set_property(SOURCE ${VS_SHD} PROPERTY VS_SHADER_TYPE Vertex)
+set_property(SOURCE ${PS_SHD} PROPERTY VS_SHADER_TYPE Pixel)
 
 # Collect source files
-FILE( GLOB SRC *.cpp )
-FILE( GLOB HDR *.h )
+FILE( GLOB SRC src/*.cpp )
+FILE( GLOB HDR src/*.h )
+FILE( GLOB SHD ${VS_SHD} ${PS_SHD} )
 
 # Set the OpenMP
 OPTION (USE_OpenMP "Use OpenMP" ON)
@@ -23,11 +30,5 @@ IF(USE_OpenMP)
   ENDIF()
 ENDIF()
 
-# Link Source files
-ADD_EXECUTABLE( ${PROJECT_NAME} ${SRC} ${HDR} )
-TARGET_LINK_LIBRARIES( ${PROJECT_NAME} ${EXTERNAL_LINK_LIBS} )
-
-# Copy DLLS
-FILE(GLOB_RECURSE DLLS ${CMAKE_SOURCE_DIR}/freeglut/*.dll)
-SOURCE_GROUP("DLL Files" FILES ${DLLS})
-FILE(COPY ${DLLS} DESTINATION ${CMAKE_BINARY_DIR})
+# Link Source files ('WIN32' keyword is used for win32 project)
+ADD_EXECUTABLE( ${PROJECT_NAME} WIN32 ${SRC} ${HDR} ${SHD} )

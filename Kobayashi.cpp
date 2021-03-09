@@ -13,8 +13,8 @@ Kobayashi::Kobayashi(int nx, int ny, double spacing) :
 	tau = 0.0003;
 	epsilonBar = 0.01;		// mean of epsilon. scaling factor that determines how much the microscopic front is magnified
 	mu = 1.0;
-	K = 1.8;				// latent heat 
-	delta = 0.01;			// strength of anisotropy (speed of growth in preferred directions)
+	K = 1.6;				// latent heat 
+	delta = 0.05;			// strength of anisotropy (speed of growth in preferred directions)
 	anisotropy = 6.0;		// degree of anisotropy
 	alpha = 0.9;
 	gamma = 10.0;
@@ -69,7 +69,7 @@ void Kobayashi::createNuclei(int transX, int transY)
 			int jIdx = (j - (_ny / 2) + transY);
 
 			// circle equation
-			if (iIdx * iIdx + jIdx * jIdx < 20)
+			if (iIdx * iIdx + jIdx * jIdx < 10)
 				_phi[i][j] = 1.0;
 
 
@@ -235,6 +235,7 @@ void Kobayashi::evolution()
 		}
 
 	}
+	//printParam(_t, "========t===========", true);
 }
 
 void Kobayashi::update()

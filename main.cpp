@@ -49,7 +49,7 @@ void displayFunc(void)
 		{
 			glVertex3f(kobayashi._x[i], kobayashi._y[j], 0);
 
-			double color = kobayashi._phi[i][j] / 2.0;
+			double color = kobayashi._phi[i][j] ;
 			glColor3f(color, color, color);
 		}
 	}

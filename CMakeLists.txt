@@ -16,8 +16,8 @@ set_property(SOURCE ${VS_SHD} PROPERTY VS_SHADER_TYPE Vertex)
 set_property(SOURCE ${PS_SHD} PROPERTY VS_SHADER_TYPE Pixel)
 
 # Collect source files
-FILE( GLOB SRC src/*.cpp )
-FILE( GLOB HDR src/*.h )
+FILE( GLOB SRC src/*.cpp src/*/*.cpp )
+FILE( GLOB HDR src/*.h src/*/*.h )
 FILE( GLOB SHD ${VS_SHD} ${PS_SHD} )
 
 # Set the OpenMP

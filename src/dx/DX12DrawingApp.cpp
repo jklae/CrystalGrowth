@@ -34,22 +34,20 @@ void DX12DrawingApp::CreateObjects(const int count, const float scale)
 	{
 		for (int j = 0; j < count; j++)
 		{
-			for (int k = 0; k < count; k++)
-			{
-				XMFLOAT3 pos = XMFLOAT3(
-					offset + (float)i * stride,
-					offset + (float)j * stride,
-					offset + (float)k * stride);
+			XMFLOAT3 pos = XMFLOAT3(
+				offset + (float)i * stride,
+				offset + (float)j * stride,
+				0.0f);
 
-				XMFLOAT4X4 world = TransformMatrix(pos.x, pos.y, pos.z, scale);
-				mWorld.push_back(world);
+			XMFLOAT4X4 world = TransformMatrix(pos.x, pos.y, pos.z, scale);
+			mWorld.push_back(world);
 
-				struct ConstantBuffer cb;
-				cb.color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-				cb.worldViewProj = TransformMatrix(0.0f, 0.0f, 0.0f);
+			struct ConstantBuffer cb;
+			cb.color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+			cb.worldViewProj = TransformMatrix(0.0f, 0.0f, 0.0f);
 
-				constantBuffer.push_back(cb);
-			}
+			constantBuffer.push_back(cb);
+			
 		}
 	}
 }

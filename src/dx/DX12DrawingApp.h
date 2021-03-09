@@ -1,10 +1,12 @@
 #pragma once
 #include "DX12DefaultApp.h"
+#include "../sim/Kobayashi.h"
 
 class DX12DrawingApp : public DX12DefaultApp
 {
 private:
 
+    std::unique_ptr<Kobayashi> kob = nullptr;
 
 
     struct ConstantBuffer
@@ -81,7 +83,7 @@ public:
 
     bool Initialize(const int count = 0, const float scale = 0.0f) final;
 
-    void Update() final;
+    void Update(DirectX::XMFLOAT4 color) final;
     void Draw() final;
 
     void UpdateVirtualSphereAngles(const POINT mLastMousePos, const int x, const int y) final;

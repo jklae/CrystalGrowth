@@ -24,11 +24,11 @@ DX12DrawingApp::~DX12DrawingApp()
 
 void DX12DrawingApp::CreateObjects(const int count, const float scale)
 {
-	const int totalCount = static_cast<size_t>(count * count * count);
+	const int totalCount = static_cast<size_t>(count * count);
 	constantBuffer.reserve(totalCount);
 	mWorld.reserve(totalCount);
 
-	const float stride = scale * 2.5f;
+	const float stride = scale * 2.0f;
 	const float offset = -(stride * count) / 2.0f;
 	for (int i = 0; i < count; i++)
 	{
@@ -43,13 +43,15 @@ void DX12DrawingApp::CreateObjects(const int count, const float scale)
 			mWorld.push_back(world);
 
 			struct ConstantBuffer cb;
-			cb.color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+			cb.color = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 			cb.worldViewProj = TransformMatrix(0.0f, 0.0f, 0.0f);
 
 			constantBuffer.push_back(cb);
 			
 		}
 	}
+
+	kob = std::make_unique<Kobayashi>(count, count, scale);
 }
 
 
@@ -266,7 +268,7 @@ void DX12DrawingApp::CreatePSO()
 #pragma endregion
 
 
-void DX12DrawingApp::Update()
+void DX12DrawingApp::Update(XMFLOAT4 color)
 {
 	// Convert Spherical to Cartesian coordinates.
 	float x = mRadius * sinf(mPhi) * cosf(mTheta);
@@ -293,7 +295,16 @@ void DX12DrawingApp::Update()
 		// Update the constant buffer with the latest worldViewProj matrix.
 		XMStoreFloat4x4(&constantBuffer[i].worldViewProj, XMMatrixTranspose(worldViewProj));
 		memcpy(&mMappedData[i * mElementByteSize], &constantBuffer[i].worldViewProj, sizeof(ConstantBuffer));
+	}
 
+	kob->update();
+	int size = constantBuffer.size();
+
+	for (int k = 0; k < size; k++)
+	{
+		int i = k / (int)(sqrt(size));
+		int j = k % (int)(sqrt(size));
+		constantBuffer[k].color = XMFLOAT4(kob->_phi[i][j], kob->_phi[i][j], kob->_phi[i][j], 1.0f);
 	}
 }
 
@@ -307,7 +318,7 @@ void DX12DrawingApp::Draw()
 		D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 
 	// Clear the back buffer and depth buffer.
-	mCommandList->ClearRenderTargetView(CurrentBackBufferView(), Colors::LightSteelBlue, 0, nullptr);
+	mCommandList->ClearRenderTargetView(CurrentBackBufferView(), Colors::Black, 0, nullptr);
 	mCommandList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
 	// Specify the buffers we are going to render to.
@@ -333,7 +344,6 @@ void DX12DrawingApp::Draw()
 		mCommandList->SetGraphicsRootDescriptorTable(0, cbvHandle);
 		mCommandList->DrawIndexedInstanced(IndexCount, 1, 0, 0, 0);
 	}
-
 	//
 
 

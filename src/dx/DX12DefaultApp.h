@@ -96,7 +96,7 @@ public:
 
     bool Initialize(const int count = 0, const float scale = 0.0f) override;
 
-    void Update() override {};
+    void Update(DirectX::XMFLOAT4 color) override {};
     void Draw() override;
 
     void UpdateVirtualSphereAngles(const POINT mLastMousePos, const int x, const int y) override {};

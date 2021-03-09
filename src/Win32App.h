@@ -32,6 +32,7 @@ private:
 
     POINT mLastMousePos;
 
+
 public:
     Win32App(const int kWidth, const int KHeight);
     ~Win32App();

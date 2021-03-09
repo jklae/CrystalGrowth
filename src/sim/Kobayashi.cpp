@@ -9,7 +9,7 @@ Kobayashi::Kobayashi(int nx, int ny, double spacing) :
 	//
 	_dx = 0.03;
 	_dy = 0.03;
-	_dt = timestep;
+	_dt = 0.0001;
 	tau = 0.0003;
 	epsilonBar = 0.01;		// mean of epsilon. scaling factor that determines how much the microscopic front is magnified
 	mu = 1.0;

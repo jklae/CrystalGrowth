@@ -13,7 +13,6 @@ class Kobayashi
 private :
 
 	const double pi = 3.1415926535;
-	const double timestep = 0.0001;
 
 	double _dx;
 	double _dy;

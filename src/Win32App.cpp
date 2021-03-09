@@ -154,6 +154,7 @@ void Win32App::CreateObjects(const int count, const float scale)
 	dxApp.reset();
 	dxApp = std::make_unique<DX12DrawingApp>(kWidth, kHeight, mhMainWnd);
 	dxApp->Initialize(count, scale);
+
 	
 }
 
@@ -161,7 +162,8 @@ void Win32App::Update()
 {
 	if (dxApp)
 	{
-		dxApp->Update();
+		DirectX::XMFLOAT4 color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+		dxApp->Update(color);
 	}
 }
 

@@ -1,6 +1,7 @@
 #include "Kobayashi.h"
 
 using namespace std;
+using namespace DirectX;
 
 Kobayashi::Kobayashi(int nx, int ny, double spacing) :
 	_nx(nx),
@@ -256,3 +257,86 @@ void Kobayashi::update()
 	printf("step %d\n", step);
 	step++;*/
 }
+
+
+
+#pragma region Implementation
+void Kobayashi::iUpdate()
+{
+}
+
+void Kobayashi::iResetSimulationState(std::vector<ConstantBuffer>& constantBuffer)
+{
+}
+
+std::vector<Vertex> Kobayashi::iGetVertice()
+{
+	vector<Vertex> vertices =
+	{
+		Vertex({ XMFLOAT3(-0.5f, -0.5f, 0.0f) }),
+		Vertex({ XMFLOAT3(-0.5f, +0.5f, 0.0f) }),
+		Vertex({ XMFLOAT3(+0.5f, +0.5f, 0.0f) }),
+		Vertex({ XMFLOAT3(+0.5f, -0.5f, 0.0f) })
+	};
+
+	return vertices;
+}
+
+std::vector<unsigned int> Kobayashi::iGetIndice()
+{
+	vector<unsigned int> indices =
+	{
+		// front face
+		0, 1, 2,
+		0, 2, 3,
+	};
+
+	return indices;
+}
+
+int Kobayashi::iGetObjectCount()
+{
+	return 1;
+}
+
+void Kobayashi::iCreateObjectParticle(std::vector<ConstantBuffer>& constantBuffer)
+{
+	struct ConstantBuffer objectCB;
+	// Multiply by a specific value to make a stripe
+	objectCB.world = transformMatrix(0.0f, 0.0f, 0.0f, 0.8f);
+	objectCB.worldViewProj = transformMatrix(0.0f, 0.0f, 0.0f);
+	objectCB.color = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+
+	constantBuffer.push_back(objectCB);
+}
+
+void Kobayashi::iWMCreate(HWND hwnd, HINSTANCE hInstance)
+{
+}
+
+void Kobayashi::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, bool& updateFlag, DX12App* dxapp)
+{
+}
+
+void Kobayashi::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, DX12App* dxapp)
+{
+}
+
+void Kobayashi::iWMTimer(HWND hwnd)
+{
+}
+
+void Kobayashi::iWMDestory(HWND hwnd)
+{
+}
+
+void Kobayashi::iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffer, int i)
+{
+}
+
+void Kobayashi::iDraw(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, int i)
+{
+	mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mCommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
+}
+#pragma endregion

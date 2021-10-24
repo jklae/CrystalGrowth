@@ -3,7 +3,7 @@
 using namespace std;
 using namespace DirectX;
 
-Kobayashi::Kobayashi(int nx, int ny, double spacing) :
+Kobayashi::Kobayashi(int nx, int ny, float spacing) :
 	_nx(nx),
 	_ny(ny)
 {
@@ -78,11 +78,11 @@ void Kobayashi::createNuclei(int transX, int transY)
 	}
 }
 
-void Kobayashi::initVector2D(vector<vector<double>>& vec2D)
+void Kobayashi::initVector2D(vector<vector<float>>& vec2D)
 {
 	for (int i = 0; i < _nx; i++)
 	{
-		vector<double> tmp;
+		vector<float> tmp;
 		tmp.resize(_ny);
 
 		vec2D.push_back(tmp);
@@ -156,7 +156,7 @@ void Kobayashi::computeGradLap(int start, int end)
 	//printParam(_epsilonDeriv, "========_epsilonDeriv===========", true);
 }
 
-void Kobayashi::printParam(vector<vector<double>>& vectemp, const char* a, bool exp) const
+void Kobayashi::printParam(vector<vector<float>>& vectemp, const char* a, bool exp) const
 {
 	// column index
 	printf("\n%s\n", a);
@@ -209,22 +209,22 @@ void Kobayashi::evolution()
 			else if (jp == _ny)
 				jp = 0;
 
-			double gradEpsPowX = (_epsilon[ip][j] * _epsilon[ip][j] - _epsilon[im][j] * _epsilon[im][j]) / _dx;
-			double gradEpsPowY = (_epsilon[i][jp] * _epsilon[i][jp] - _epsilon[i][jm] * _epsilon[i][jm]) / _dy;
+			float gradEpsPowX = (_epsilon[ip][j] * _epsilon[ip][j] - _epsilon[im][j] * _epsilon[im][j]) / _dx;
+			float gradEpsPowY = (_epsilon[i][jp] * _epsilon[i][jp] - _epsilon[i][jm] * _epsilon[i][jm]) / _dy;
 
-			double term1 = (_epsilon[i][jp] * _epsilonDeriv[i][jp] * _gradPhiX[i][jp]
+			float term1 = (_epsilon[i][jp] * _epsilonDeriv[i][jp] * _gradPhiX[i][jp]
 				- _epsilon[i][jm] * _epsilonDeriv[i][jm] * _gradPhiX[i][jm])
 				/ _dy;
 
-			double term2 = -(_epsilon[ip][j] * _epsilonDeriv[ip][j] * _gradPhiY[ip][j]
+			float term2 = -(_epsilon[ip][j] * _epsilonDeriv[ip][j] * _gradPhiY[ip][j]
 				- _epsilon[im][j] * _epsilonDeriv[im][j] * _gradPhiY[im][j])
 				/ _dx;
-			double term3 = gradEpsPowX * _gradPhiX[i][j] + gradEpsPowY * _gradPhiY[i][j];
+			float term3 = gradEpsPowX * _gradPhiX[i][j] + gradEpsPowY * _gradPhiY[i][j];
 
-			double m = alpha / pi * atan(gamma*(tEq - _t[i][j]));
+			float m = alpha / pi * atan(gamma*(tEq - _t[i][j]));
 
-			double oldPhi = _phi[i][j];
-			double oldT = _t[i][j];
+			float oldPhi = _phi[i][j];
+			float oldT = _t[i][j];
 
 			_phi[i][j] = _phi[i][j] +
 				(term1 + term2 + _epsilon[i][j] * _epsilon[i][j] * _lapPhi[i][j]
@@ -242,14 +242,14 @@ void Kobayashi::evolution()
 void Kobayashi::update()
 {
 	clock_t start, finish;
-	/*double duration;
+	/*float duration;
 
 	start = clock();*/
 	computeGradLap(0, 0);
 	evolution();
 	/*finish = clock();
 
-	duration = (double)(finish - start) / CLOCKS_PER_SEC;
+	duration = (float)(finish - start) / CLOCKS_PER_SEC;
 
 	cout << duration << "ÃÊ\n";*/
 

@@ -28,44 +28,44 @@ public:
 
 	int _nx;
 	int _ny;
-	std::vector<double> _x;
-	std::vector<double> _y;
-	std::vector<std::vector<double>> _phi;
+	std::vector<float> _x;
+	std::vector<float> _y;
+	std::vector<std::vector<float>> _phi;
 
-	Kobayashi(int nx, int ny, double spacing);
+	Kobayashi(int nx, int ny, float spacing);
 
 	void update();
 
 private :
 	float _objectCount = 60;
 
-	const double pi = 3.1415926535;
+	const float pi = 3.1415926535;
 
-	double _dx;
-	double _dy;
-	double _dt;
-	double tau;
-	double epsilonBar;
-	double mu;
-	double K;
-	double delta;
-	double anisotropy;
-	double alpha;
-	double gamma;
-	double tEq;
+	float _dx;
+	float _dy;
+	float _dt;
+	float tau;
+	float epsilonBar;
+	float mu;
+	float K;
+	float delta;
+	float anisotropy;
+	float alpha;
+	float gamma;
+	float tEq;
 
-	std::vector<std::vector<double>> _t;
-	std::vector<std::vector<double>> _epsilon;
-	std::vector<std::vector<double>> _epsilonDeriv;
-	std::vector<std::vector<double>> _gradPhiX;
-	std::vector<std::vector<double>> _gradPhiY;
-	std::vector<std::vector<double>> _lapPhi;
-	std::vector<std::vector<double>> _lapT;
-	std::vector<std::vector<double>> _angl;
+	std::vector<std::vector<float>> _t;
+	std::vector<std::vector<float>> _epsilon;
+	std::vector<std::vector<float>> _epsilonDeriv;
+	std::vector<std::vector<float>> _gradPhiX;
+	std::vector<std::vector<float>> _gradPhiY;
+	std::vector<std::vector<float>> _lapPhi;
+	std::vector<std::vector<float>> _lapT;
+	std::vector<std::vector<float>> _angl;
 
-	void initVector2D(std::vector<std::vector<double>>& vec2D);
+	void initVector2D(std::vector<std::vector<float>>& vec2D);
 	void computeGradLap(int start, int end);
 	void evolution();
-	void printParam(std::vector<std::vector<double>>& vectemp, const char* a, bool exp) const;
+	void printParam(std::vector<std::vector<float>>& vectemp, const char* a, bool exp) const;
 	void createNuclei(int transX, int transY);
 };

@@ -37,6 +37,8 @@ public:
 	void update();
 
 private :
+	float _objectCount = 60;
+
 	const double pi = 3.1415926535;
 
 	double _dx;

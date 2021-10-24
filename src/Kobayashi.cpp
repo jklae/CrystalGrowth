@@ -263,6 +263,7 @@ void Kobayashi::update()
 #pragma region Implementation
 void Kobayashi::iUpdate()
 {
+	update();
 }
 
 void Kobayashi::iResetSimulationState(std::vector<ConstantBuffer>& constantBuffer)
@@ -296,18 +297,29 @@ std::vector<unsigned int> Kobayashi::iGetIndice()
 
 int Kobayashi::iGetObjectCount()
 {
-	return 1;
+	return _objectCount;
 }
 
 void Kobayashi::iCreateObjectParticle(std::vector<ConstantBuffer>& constantBuffer)
 {
-	struct ConstantBuffer objectCB;
-	// Multiply by a specific value to make a stripe
-	objectCB.world = transformMatrix(0.0f, 0.0f, 0.0f, 0.8f);
-	objectCB.worldViewProj = transformMatrix(0.0f, 0.0f, 0.0f);
-	objectCB.color = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	for (int i = 0; i < _objectCount; i++)
+	{
+		for (int j = 0; j < _objectCount; j++)
+		{
+			// Position
+			XMFLOAT2 pos = XMFLOAT2(
+				(float)j,    // "j"
+				(float)i);   // "i"
 
-	constantBuffer.push_back(objectCB);
+			struct ConstantBuffer objectCB;
+			// Multiply by a specific value to make a stripe
+			objectCB.world = transformMatrix(pos.x, pos.y, 0.0f, 0.8f);
+			objectCB.worldViewProj = transformMatrix(0.0f, 0.0f, 0.0f);
+			objectCB.color = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+
+			constantBuffer.push_back(objectCB);
+		}
+	}
 }
 
 void Kobayashi::iWMCreate(HWND hwnd, HINSTANCE hInstance)
@@ -332,6 +344,11 @@ void Kobayashi::iWMDestory(HWND hwnd)
 
 void Kobayashi::iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffer, int i)
 {
+	int size = constantBuffer.size();
+	int j = i / (int)(sqrt(size));
+	int k = i % (int)(sqrt(size));
+
+	constantBuffer[i].color = { (float)_phi[j][k], (float)_phi[j][k], (float)_phi[j][k], 1.0f };
 }
 
 void Kobayashi::iDraw(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, int i)

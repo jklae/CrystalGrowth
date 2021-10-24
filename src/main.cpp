@@ -10,9 +10,9 @@
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
     // Simulation init
-    int x = 60;
-    int y = 60;
-    float timeStep = 0.01f;
+    int x = 100;
+    int y = 0;
+    float timeStep = 0.0001f;
 
     Kobayashi* fluidsim = new Kobayashi(x, y, timeStep);
 

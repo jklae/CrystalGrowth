@@ -32,12 +32,12 @@ public:
 	std::vector<float> _y;
 	std::vector<std::vector<float>> _phi;
 
-	Kobayashi(int nx, int ny, float spacing);
+	Kobayashi(int nx, int ny, float timeStep);
 
 	void update();
 
 private :
-	float _objectCount = 60;
+	float _objectCount = 1;
 
 	const float pi = 3.1415926535;
 

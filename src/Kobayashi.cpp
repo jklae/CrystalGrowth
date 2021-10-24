@@ -3,27 +3,29 @@
 using namespace std;
 using namespace DirectX;
 
-Kobayashi::Kobayashi(int nx, int ny, float spacing) :
+Kobayashi::Kobayashi(int nx, int ny, float timeStep) :
 	_nx(nx),
-	_ny(ny)
+	_ny(nx)
 {
+	_objectCount = _nx;
+
 	//
-	_dx = 0.03;
-	_dy = 0.03;
-	_dt = 0.0001;
-	tau = 0.0003;
-	epsilonBar = 0.01;		// mean of epsilon. scaling factor that determines how much the microscopic front is magnified
-	mu = 1.0;
-	K = 1.6;				// latent heat 
-	delta = 0.05;			// strength of anisotropy (speed of growth in preferred directions)
-	anisotropy = 6.0;		// degree of anisotropy
-	alpha = 0.9;
-	gamma = 10.0;
-	tEq = 1.0;
+	_dx = 0.03f;
+	_dy = 0.03f;
+	_dt = timeStep;
+	tau = 0.0003f;
+	epsilonBar = 0.01f;		// mean of epsilon. scaling factor that determines how much the microscopic front is magnified
+	mu = 1.0f;
+	K = 1.6f;				// latent heat 
+	delta = 0.05f;			// strength of anisotropy (speed of growth in preferred directions)
+	anisotropy = 6.0f;		// degree of anisotropy
+	alpha = 0.9f;
+	gamma = 10.0f;
+	tEq = 1.0f;
 	//sdas
 
-	_x.resize(nx);
-	_y.resize(ny);
+	_x.resize(_nx);
+	_y.resize(_ny);
 
 	initVector2D(_phi);
 	initVector2D(_t);
@@ -39,12 +41,12 @@ Kobayashi::Kobayashi(int nx, int ny, float spacing) :
 	// set the position
 	for (int i = 0; i < _nx; i++)
 	{
-		_x[i] = i * spacing - _nx / 2.0 * spacing;
+		_x[i] = i - _nx / 2.0;
 	}
 
 	for (int i = 0; i < _ny; i++)
 	{
-		_y[i] = i * spacing - _ny / 2.0 * spacing;
+		_y[i] = i - _ny / 2.0;
 	}
 
 	for (int i = 0; i < _nx; i++)
@@ -313,7 +315,7 @@ void Kobayashi::iCreateObjectParticle(std::vector<ConstantBuffer>& constantBuffe
 
 			struct ConstantBuffer objectCB;
 			// Multiply by a specific value to make a stripe
-			objectCB.world = transformMatrix(pos.x, pos.y, 0.0f, 0.8f);
+			objectCB.world = transformMatrix(pos.x, pos.y, 0.0f, 1.0f);
 			objectCB.worldViewProj = transformMatrix(0.0f, 0.0f, 0.0f);
 			objectCB.color = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 

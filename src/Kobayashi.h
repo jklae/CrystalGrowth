@@ -78,7 +78,7 @@ private :
 	std::vector<std::vector<float>> _angl;
 
 	void initVector2D(std::vector<std::vector<float>>& vec2D);
-	void computeGradLap(int start, int end);
+	void computeGradLap();
 	void evolution();
 	void createNuclei(int transX, int transY);
 };

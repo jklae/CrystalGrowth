@@ -91,7 +91,7 @@ void Kobayashi::initVector2D(vector<vector<float>>& vec2D)
 	}
 }
 
-void Kobayashi::computeGradLap(int start, int end)
+void Kobayashi::computeGradLap()
 {
 
 	for (int j = 0; j < _ny; j++)
@@ -207,7 +207,7 @@ void Kobayashi::evolution()
 
 void Kobayashi::update()
 {
-	computeGradLap(0, 0);
+	computeGradLap();
 	evolution();
 }
 

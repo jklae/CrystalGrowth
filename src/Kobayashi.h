@@ -53,7 +53,7 @@ private :
 
 	DX12App* _dxapp = nullptr;
 
-	int _objectCount = 1;
+	DirectX::XMINT2 _objectCount = { 0, 0 };
 
 	const float pi = 3.1415926535;
 

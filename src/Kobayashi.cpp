@@ -5,9 +5,9 @@ using namespace DirectX;
 
 Kobayashi::Kobayashi(int nx, int ny, float timeStep) :
 	_nx(nx),
-	_ny(nx)
+	_ny(ny)
 {
-	_objectCount = _nx;
+	_objectCount = { _nx, _ny };
 
 	//
 	_dx = 0.03f;
@@ -49,9 +49,9 @@ Kobayashi::Kobayashi(int nx, int ny, float timeStep) :
 		_y[i] = i - _ny / 2.0;
 	}
 
-	for (int i = 0; i < _nx; i++)
+	for (int j = 0; j < _ny; j++)
 	{
-		for (int j = 0; j < _ny; j++)
+		for (int i = 0; i < _nx; i++)
 		{
 			_phi[i][j] = 0.0;
 		}
@@ -64,9 +64,9 @@ Kobayashi::Kobayashi(int nx, int ny, float timeStep) :
 
 void Kobayashi::createNuclei(int transX, int transY)
 {
-	for (int i = 0; i < _nx; i++)
+	for (int j = 0; j < _ny; j++)
 	{
-		for (int j = 0; j < _ny; j++)
+		for (int i = 0; i < _nx; i++)
 		{
 			int iIdx = (i - (_nx / 2) + transX);
 			int jIdx = (j - (_ny / 2) + transY);
@@ -93,13 +93,14 @@ void Kobayashi::initVector2D(vector<vector<float>>& vec2D)
 
 void Kobayashi::computeGradLap(int start, int end)
 {
-#pragma omp parallel num_threads(24)
+
+//#pragma omp for schedule(guided)
+	for (int j = 0; j < _ny; j++)
 	{
-#pragma omp for schedule(guided)
-		for (int k = 0; k < _nx * _ny; k++)
+		for (int i = 0; i < _nx; i++)
 		{
-			int i = k / _nx;
-			int j = k % _ny;
+			//int i = k / _nx;
+			//int j = k % _ny;
 
 			int jp = j + 1;
 			int jm = j - 1;
@@ -121,25 +122,25 @@ void Kobayashi::computeGradLap(int start, int end)
 			_gradPhiX[i][j] = (_phi[ip][j] - _phi[im][j]) / _dx;
 			_gradPhiY[i][j] = (_phi[i][jp] - _phi[i][jm]) / _dy;
 
-			_lapPhi[i][j] = (2.0 * (_phi[ip][j] + _phi[im][j] + _phi[i][jp] + _phi[i][jm])
+			_lapPhi[i][j] = (2.0f * (_phi[ip][j] + _phi[im][j] + _phi[i][jp] + _phi[i][jm])
 				+ _phi[ip][jp] + _phi[im][jm] + _phi[im][jp] + _phi[ip][jm]
-				- 12.0*_phi[i][j])
-				/ (3.0*_dx*_dx);
-			_lapT[i][j] = (2.0 * (_t[ip][j] + _t[im][j] + _t[i][jp] + _t[i][jm])
+				- 12.0f * _phi[i][j])
+				/ (3.0f * _dx * _dx);
+			_lapT[i][j] = (2.0f * (_t[ip][j] + _t[im][j] + _t[i][jp] + _t[i][jm])
 				+ _t[ip][jp] + _t[im][jm] + _t[im][jp] + _t[ip][jm]
-				- 12.0*_t[i][j])
-				/ (3.0*_dx*_dx);
+				- 12.0f * _t[i][j])
+				/ (3.0f * _dx * _dx);
 
 
 			if (_gradPhiX[i][j] == 0)
 				if (_gradPhiY[i][j] < 0)
-					_angl[i][j] = -0.5*pi;
+					_angl[i][j] = -0.5f * pi;
 				else if (_gradPhiY[i][j] > 0)
-					_angl[i][j] = 0.5*pi;
+					_angl[i][j] = 0.5f * pi;
 
 			if (_gradPhiX[i][j] > 0)
 				if (_gradPhiY[i][j] < 0)
-					_angl[i][j] = 2.0*pi + atan(_gradPhiY[i][j] / _gradPhiX[i][j]);
+					_angl[i][j] = 2.0f * pi + atan(_gradPhiY[i][j] / _gradPhiX[i][j]);
 				else if (_gradPhiY[i][j] > 0)
 					_angl[i][j] = atan(_gradPhiY[i][j] / _gradPhiX[i][j]);
 
@@ -149,13 +150,11 @@ void Kobayashi::computeGradLap(int start, int end)
 
 
 
-			_epsilon[i][j] = epsilonBar * (1.0 + delta * cos(anisotropy*_angl[i][j]));
-			_epsilonDeriv[i][j] = -epsilonBar * anisotropy * delta * sin(anisotropy*_angl[i][j]);
+			_epsilon[i][j] = epsilonBar * (1.0f + delta * cos(anisotropy * _angl[i][j]));
+			_epsilonDeriv[i][j] = -epsilonBar * anisotropy * delta * sin(anisotropy * _angl[i][j]);
 
 		}
-
 	}
-	//printParam(_epsilonDeriv, "========_epsilonDeriv===========", true);
 }
 
 void Kobayashi::printParam(vector<vector<float>>& vectemp, const char* a, bool exp) const
@@ -188,13 +187,15 @@ void Kobayashi::printParam(vector<vector<float>>& vectemp, const char* a, bool e
 
 void Kobayashi::evolution()
 {
-#pragma omp parallel num_threads(24)
+//#pragma omp parallel num_threads(24)
+	//{
+//#pragma omp for schedule(guided)
+	for (int j = 0; j < _ny; j++)
 	{
-#pragma omp for schedule(guided)
-		for (int k = 0; k < _nx * _ny; k++)
+		for (int i = 0; i < _nx; i++)
 		{
-			int i = k / _nx;
-			int j = k % _ny;
+			//int i = k / _nx;
+			//int j = k % _ny;
 
 			int jp = j + 1;
 			int jm = j - 1;
@@ -231,33 +232,19 @@ void Kobayashi::evolution()
 			_phi[i][j] = _phi[i][j] +
 				(term1 + term2 + _epsilon[i][j] * _epsilon[i][j] * _lapPhi[i][j]
 					+ term3
-					+ oldPhi * (1.0 - oldPhi)*(oldPhi - 0.5 + m))*_dt / tau;
+					+ oldPhi * (1.0f - oldPhi)*(oldPhi - 0.5f + m))*_dt / tau;
 			_t[i][j] = oldT + _lapT[i][j] * _dt + K * (_phi[i][j] - oldPhi);
 
 
 		}
 
 	}
-	//printParam(_t, "========t===========", true);
 }
 
 void Kobayashi::update()
 {
-	clock_t start, finish;
-	/*float duration;
-
-	start = clock();*/
 	computeGradLap(0, 0);
 	evolution();
-	/*finish = clock();
-
-	duration = (float)(finish - start) / CLOCKS_PER_SEC;
-
-	cout << duration << "ÃÊ\n";*/
-
-	/*static int step = 1;
-	printf("step %d\n", step);
-	step++;*/
 }
 
 
@@ -312,14 +299,14 @@ UINT Kobayashi::iGetIndexBufferSize()
 // DirectX methods
 void Kobayashi::iCreateObject(std::vector<ConstantBuffer>& constantBuffer)
 {
-	for (int i = 0; i < _objectCount; i++)
+	for (int j = 0; j < _objectCount.y; j++)
 	{
-		for (int j = 0; j < _objectCount; j++)
+		for (int i = 0; i < _objectCount.x; i++)
 		{
 			// Position
 			XMFLOAT2 pos = XMFLOAT2(
-				(float)j,    // "j"
-				(float)i);   // "i"
+				(float)i,
+				(float)j);
 
 			struct ConstantBuffer objectCB;
 			objectCB.world = DXViewer::util::transformMatrix(pos.x, pos.y, 0.0f, 1.0f);
@@ -354,12 +341,12 @@ void Kobayashi::iSetDXApp(DX12App* dxApp)
 
 UINT Kobayashi::iGetConstantBufferSize()
 {
-	return _objectCount * _objectCount;
+	return _objectCount.x * _objectCount.y * 2;
 }
 
 XMINT3 Kobayashi::iGetObjectCount()
 {
-	return { _objectCount, _objectCount, 0 };
+	return { _objectCount.x, _objectCount.y, 0 };
 }
 
 XMFLOAT3 Kobayashi::iGetObjectSize()

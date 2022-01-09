@@ -12,7 +12,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 {
     // Simulation init
     int x = 100;
-    int y = 0;
+    int y = 100;
     float timeStep = 0.0001f;
 
     Kobayashi* crystalsim = new Kobayashi(x, y, timeStep);

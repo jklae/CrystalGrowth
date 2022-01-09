@@ -55,8 +55,6 @@ private :
 
 	DirectX::XMINT2 _objectCount = { 0, 0 };
 
-	const float pi = 3.1415926535;
-
 	float _dx;
 	float _dy;
 	float _dt;
@@ -82,6 +80,5 @@ private :
 	void initVector2D(std::vector<std::vector<float>>& vec2D);
 	void computeGradLap(int start, int end);
 	void evolution();
-	void printParam(std::vector<std::vector<float>>& vectemp, const char* a, bool exp) const;
 	void createNuclei(int transX, int transY);
 };

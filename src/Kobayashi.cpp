@@ -94,13 +94,10 @@ void Kobayashi::initVector2D(vector<vector<float>>& vec2D)
 void Kobayashi::computeGradLap(int start, int end)
 {
 
-//#pragma omp for schedule(guided)
 	for (int j = 0; j < _ny; j++)
 	{
 		for (int i = 0; i < _nx; i++)
 		{
-			//int i = k / _nx;
-			//int j = k % _ny;
 
 			int jp = j + 1;
 			int jm = j - 1;
@@ -132,20 +129,20 @@ void Kobayashi::computeGradLap(int start, int end)
 				/ (3.0f * _dx * _dx);
 
 
-			if (_gradPhiX[i][j] == 0)
-				if (_gradPhiY[i][j] < 0)
-					_angl[i][j] = -0.5f * pi;
-				else if (_gradPhiY[i][j] > 0)
-					_angl[i][j] = 0.5f * pi;
+			if (_gradPhiX[i][j] <= +EPS_F && _gradPhiX[i][j] >= -EPS_F) // _gradPhiX[i][j] == 0.0f
+				if (_gradPhiY[i][j] < -EPS_F)
+					_angl[i][j] = -0.5f * PI_F;
+				else if (_gradPhiY[i][j] > +EPS_F)
+					_angl[i][j] = 0.5f * PI_F;
 
-			if (_gradPhiX[i][j] > 0)
-				if (_gradPhiY[i][j] < 0)
-					_angl[i][j] = 2.0f * pi + atan(_gradPhiY[i][j] / _gradPhiX[i][j]);
-				else if (_gradPhiY[i][j] > 0)
+			if (_gradPhiX[i][j] > +EPS_F)
+				if (_gradPhiY[i][j] < -EPS_F)
+					_angl[i][j] = 2.0f * PI_F + atan(_gradPhiY[i][j] / _gradPhiX[i][j]);
+				else if (_gradPhiY[i][j] > +EPS_F)
 					_angl[i][j] = atan(_gradPhiY[i][j] / _gradPhiX[i][j]);
 
-			if (_gradPhiX[i][j] < 0)
-				_angl[i][j] = pi + atan(_gradPhiY[i][j] / _gradPhiX[i][j]);
+			if (_gradPhiX[i][j] < -EPS_F)
+				_angl[i][j] = PI_F + atan(_gradPhiY[i][j] / _gradPhiX[i][j]);
 
 
 
@@ -157,45 +154,12 @@ void Kobayashi::computeGradLap(int start, int end)
 	}
 }
 
-void Kobayashi::printParam(vector<vector<float>>& vectemp, const char* a, bool exp) const
-{
-	// column index
-	printf("\n%s\n", a);
-	for (int j = 0; j < _ny + 1; j++)
-	{
-		printf(exp ? "%11d  " : "%8d  ", j);
-	}
-	printf("\n");
-
-	// row 
-	for (int i = 0; i < _nx; i++)
-	{
-		// row index
-		printf(exp ? "%11d  " : "%8d  ", i + 1);
-
-		// -- contents
-		for (int j = 0; j < _ny; j++)
-		{
-			printf(exp ? "%11.4e, " : "%8.4lf  ", vectemp[i][j]);
-		}
-		printf("\n");
-		// --
-
-	}
-	printf("\n");
-}
-
 void Kobayashi::evolution()
 {
-//#pragma omp parallel num_threads(24)
-	//{
-//#pragma omp for schedule(guided)
 	for (int j = 0; j < _ny; j++)
 	{
 		for (int i = 0; i < _nx; i++)
 		{
-			//int i = k / _nx;
-			//int j = k % _ny;
 
 			int jp = j + 1;
 			int jm = j - 1;
@@ -224,7 +188,7 @@ void Kobayashi::evolution()
 				/ _dx;
 			float term3 = gradEpsPowX * _gradPhiX[i][j] + gradEpsPowY * _gradPhiY[i][j];
 
-			float m = alpha / pi * atan(gamma*(tEq - _t[i][j]));
+			float m = alpha / PI_F * atan(gamma*(tEq - _t[i][j]));
 
 			float oldPhi = _phi[i][j];
 			float oldT = _t[i][j];

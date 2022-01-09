@@ -8,12 +8,20 @@ PROJECT(${PROJECT_NAME})
 add_definitions(-DUNICODE -D_UNICODE)
 
 # Set the header directory
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/ext/DXViewer/DXViewer-2.0.0/include)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/ext/DXViewer/DXViewer-3.0.0/include)
+
+# Collect shader files
+FILE( GLOB VS_SHD ${CMAKE_SOURCE_DIR}/shader/vertexShader.hlsl )
+FILE( GLOB PS_SHD ${CMAKE_SOURCE_DIR}/ext/DXViewer/shader/fragShader.hlsl )
+
+# Set the shader type of files
+set_property(SOURCE ${VS_SHD} PROPERTY VS_SHADER_TYPE Vertex)
+set_property(SOURCE ${PS_SHD} PROPERTY VS_SHADER_TYPE Pixel)
 
 # Collect source files
 FILE( GLOB SRC ${CMAKE_SOURCE_DIR}/ext/DXViewer/src/*.cpp
                 ${CMAKE_SOURCE_DIR}/src/*.cpp)
-FILE( GLOB HDR ${CMAKE_SOURCE_DIR}/ext/DXViewer/DXViewer-2.0.0/include/*.h 
+FILE( GLOB HDR ${CMAKE_SOURCE_DIR}/ext/DXViewer/DXViewer-3.0.0/include/*.h 
                 ${CMAKE_SOURCE_DIR}/src/*.h)
 FILE( GLOB SHD ${VS_SHD} ${PS_SHD} )
 
@@ -27,5 +35,5 @@ IF(USE_OpenMP)
   ENDIF()
 ENDIF()
 
-# Link Source files ('WIN32' keyword is used for win32 project)
+# Link Source files
 ADD_EXECUTABLE( ${PROJECT_NAME} WIN32 ${SRC} ${HDR} ${SHD} )

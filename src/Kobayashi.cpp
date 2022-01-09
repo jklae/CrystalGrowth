@@ -263,6 +263,8 @@ void Kobayashi::update()
 
 
 #pragma region Implementation
+// ################################## Implementation ####################################
+// Simulation methods
 void Kobayashi::iUpdate()
 {
 	update();
@@ -272,37 +274,43 @@ void Kobayashi::iResetSimulationState(std::vector<ConstantBuffer>& constantBuffe
 {
 }
 
-std::vector<Vertex> Kobayashi::iGetVertice()
-{
-	vector<Vertex> vertices =
-	{
-		Vertex({ XMFLOAT3(-0.5f, -0.5f, 0.0f) }),
-		Vertex({ XMFLOAT3(-0.5f, +0.5f, 0.0f) }),
-		Vertex({ XMFLOAT3(+0.5f, +0.5f, 0.0f) }),
-		Vertex({ XMFLOAT3(+0.5f, -0.5f, 0.0f) })
-	};
 
-	return vertices;
+// Mesh methods
+std::vector<Vertex>& Kobayashi::iGetVertice()
+{
+	_vertices.clear();
+
+	_vertices.push_back(Vertex({ DirectX::XMFLOAT3(-0.5f, -0.5f, -0.0f) }));
+	_vertices.push_back(Vertex({ DirectX::XMFLOAT3(-0.5f, +0.5f, -0.0f) }));
+	_vertices.push_back(Vertex({ DirectX::XMFLOAT3(+0.5f, +0.5f, -0.0f) }));
+	_vertices.push_back(Vertex({ DirectX::XMFLOAT3(+0.5f, -0.5f, -0.0f) }));
+
+	return _vertices;
 }
 
-std::vector<unsigned int> Kobayashi::iGetIndice()
+std::vector<unsigned int>& Kobayashi::iGetIndice()
 {
-	vector<unsigned int> indices =
-	{
-		// front face
-		0, 1, 2,
-		0, 2, 3,
-	};
+	_indices.clear();
 
-	return indices;
+	_indices.push_back(0); _indices.push_back(1); _indices.push_back(2);
+	_indices.push_back(0); _indices.push_back(2); _indices.push_back(3);
+
+	return _indices;
 }
 
-int Kobayashi::iGetObjectCount()
+UINT Kobayashi::iGetVertexBufferSize()
 {
-	return _objectCount;
+	return 4;
 }
 
-void Kobayashi::iCreateObjectParticle(std::vector<ConstantBuffer>& constantBuffer)
+UINT Kobayashi::iGetIndexBufferSize()
+{
+	return 6;
+}
+
+
+// DirectX methods
+void Kobayashi::iCreateObject(std::vector<ConstantBuffer>& constantBuffer)
 {
 	for (int i = 0; i < _objectCount; i++)
 	{
@@ -314,34 +322,14 @@ void Kobayashi::iCreateObjectParticle(std::vector<ConstantBuffer>& constantBuffe
 				(float)i);   // "i"
 
 			struct ConstantBuffer objectCB;
-			// Multiply by a specific value to make a stripe
-			objectCB.world = transformMatrix(pos.x, pos.y, 0.0f, 1.0f);
-			objectCB.worldViewProj = transformMatrix(0.0f, 0.0f, 0.0f);
+			objectCB.world = DXViewer::util::transformMatrix(pos.x, pos.y, 0.0f, 1.0f);
+			objectCB.worldViewProj = DXViewer::util::transformMatrix(0.0f, 0.0f, 0.0f);
+			objectCB.transInvWorld = DXViewer::util::transformMatrix(0.0f, 0.0f, 0.0f);
 			objectCB.color = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
 			constantBuffer.push_back(objectCB);
 		}
 	}
-}
-
-void Kobayashi::iWMCreate(HWND hwnd, HINSTANCE hInstance)
-{
-}
-
-void Kobayashi::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, bool& updateFlag, DX12App* dxapp)
-{
-}
-
-void Kobayashi::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, DX12App* dxapp)
-{
-}
-
-void Kobayashi::iWMTimer(HWND hwnd)
-{
-}
-
-void Kobayashi::iWMDestory(HWND hwnd)
-{
 }
 
 void Kobayashi::iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffer, int i)
@@ -358,4 +346,56 @@ void Kobayashi::iDraw(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mComman
 	mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	mCommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
 }
+
+void Kobayashi::iSetDXApp(DX12App* dxApp)
+{
+	_dxapp = dxApp;
+}
+
+UINT Kobayashi::iGetConstantBufferSize()
+{
+	return _objectCount * _objectCount;
+}
+
+XMINT3 Kobayashi::iGetObjectCount()
+{
+	return { _objectCount, _objectCount, 0 };
+}
+
+XMFLOAT3 Kobayashi::iGetObjectSize()
+{
+	return { 1.0f, 1.0f, 0.0f };
+}
+
+XMFLOAT3 Kobayashi::iGetObjectPositionOffset()
+{
+	return { 0.0f, 0.0f, 0.0f };
+}
+
+bool Kobayashi::iIsUpdated()
+{
+	return true;
+}
+
+void Kobayashi::iWMCreate(HWND hwnd, HINSTANCE hInstance)
+{
+}
+
+void Kobayashi::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance)
+{
+}
+
+void Kobayashi::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance)
+{
+}
+
+void Kobayashi::iWMTimer(HWND hwnd)
+{
+}
+
+void Kobayashi::iWMDestory(HWND hwnd)
+{
+}
+
+// #######################################################################################
 #pragma endregion

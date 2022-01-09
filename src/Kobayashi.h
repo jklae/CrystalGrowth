@@ -7,22 +7,33 @@ class Kobayashi : public ISimulation
 public:
 #pragma region Implementation
 	// ################################## Implementation ####################################
+	// Simulation methods
 	void iUpdate() override;
 	void iResetSimulationState(std::vector<ConstantBuffer>& constantBuffer) override;
 
-	std::vector<Vertex> iGetVertice() override;
-	std::vector<unsigned int> iGetIndice() override;
-	int iGetObjectCount() override;
+	// Mesh methods
+	std::vector<Vertex>& iGetVertice() override;
+	std::vector<unsigned int>& iGetIndice() override;
+	UINT iGetVertexBufferSize() override;
+	UINT iGetIndexBufferSize() override;
 
-	void iCreateObjectParticle(std::vector<ConstantBuffer>& constantBuffer) override;
-	void iWMCreate(HWND hwnd, HINSTANCE hInstance) override;
-	void iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, bool& updateFlag, DX12App* dxapp) override;
-	void iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, DX12App* dxapp) override;
-	void iWMTimer(HWND hwnd) override;
-	void iWMDestory(HWND hwnd) override;
-
+	// DirectX methods
+	void iCreateObject(std::vector<ConstantBuffer>& constantBuffer) override;
 	void iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffer, int i) override;
 	void iDraw(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, int i) override;
+	void iSetDXApp(DX12App* dxApp) override;
+	UINT iGetConstantBufferSize() override;
+	DirectX::XMINT3 iGetObjectCount() override;
+	DirectX::XMFLOAT3 iGetObjectSize() override;
+	DirectX::XMFLOAT3 iGetObjectPositionOffset() override;
+	bool iIsUpdated() override;
+
+	// WndProc methods
+	void iWMCreate(HWND hwnd, HINSTANCE hInstance) override;
+	void iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance) override;
+	void iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance) override;
+	void iWMTimer(HWND hwnd) override;
+	void iWMDestory(HWND hwnd) override;
 	// #######################################################################################
 #pragma endregion
 
@@ -37,7 +48,12 @@ public:
 	void update();
 
 private :
-	float _objectCount = 1;
+	std::vector<Vertex> _vertices;
+	std::vector<unsigned int> _indices;
+
+	DX12App* _dxapp = nullptr;
+
+	int _objectCount = 1;
 
 	const float pi = 3.1415926535;
 

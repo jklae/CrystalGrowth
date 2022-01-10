@@ -3,11 +3,9 @@
 using namespace std;
 using namespace DirectX;
 
-Kobayashi::Kobayashi(int nx, int ny, float timeStep) :
-	_nx(nx),
-	_ny(ny)
+Kobayashi::Kobayashi(int x, int y, float timeStep)
 {
-	_objectCount = { _nx, _ny };
+	_objectCount = { x, y };
 
 	//
 	_dx = 0.03f;
@@ -39,14 +37,14 @@ Kobayashi::Kobayashi(int nx, int ny, float timeStep) :
 	_epsilonDeriv.assign(vSize, 0.0f);
 
 	// set the position
-	for (int i = 0; i < _nx; i++)
+	for (int i = 0; i < _objectCount.x; i++)
 	{
-		_x[i] = i - _nx / 2.0;
+		_x[i] = i - _objectCount.x / 2.0;
 	}
 
-	for (int i = 0; i < _ny; i++)
+	for (int i = 0; i < _objectCount.y; i++)
 	{
-		_y[i] = i - _ny / 2.0;
+		_y[i] = i - _objectCount.y / 2.0;
 	}
 
 	// set the nuclei
@@ -56,39 +54,26 @@ Kobayashi::Kobayashi(int nx, int ny, float timeStep) :
 
 void Kobayashi::createNuclei(int transX, int transY)
 {
-	for (int j = 0; j < _ny; j++)
+	for (int j = 0; j < _objectCount.y; j++)
 	{
-		for (int i = 0; i < _nx; i++)
+		for (int i = 0; i < _objectCount.x; i++)
 		{
-			int iIdx = (i - (_nx / 2) + transX);
-			int jIdx = (j - (_ny / 2) + transY);
+			int iIdx = (i - (_objectCount.x / 2) + transX);
+			int jIdx = (j - (_objectCount.y / 2) + transY);
 
 			// circle equation
 			if (iIdx * iIdx + jIdx * jIdx < 10)
 				_phi[_INDEX(i, j)] = 1.0;
-
-
 		}
-	}
-}
-
-void Kobayashi::initVector2D(vector<vector<float>>& vec2D)
-{
-	for (int i = 0; i < _nx; i++)
-	{
-		vector<float> tmp;
-		tmp.resize(_ny);
-
-		vec2D.push_back(tmp);
 	}
 }
 
 void Kobayashi::computeGradLap()
 {
 
-	for (int j = 0; j < _ny; j++)
+	for (int j = 0; j < _objectCount.y; j++)
 	{
-		for (int i = 0; i < _nx; i++)
+		for (int i = 0; i < _objectCount.x; i++)
 		{
 
 			int jp = j + 1;
@@ -97,13 +82,13 @@ void Kobayashi::computeGradLap()
 			int im = i - 1;
 
 			if (im == -1)
-				im = _nx - 1;
-			else if (ip == _nx)
+				im = _objectCount.x - 1;
+			else if (ip == _objectCount.x)
 				ip = 0;
 
 			if (jm == -1)
-				jm = _ny - 1;
-			else if (jp == _ny)
+				jm = _objectCount.y - 1;
+			else if (jp == _objectCount.y)
 				jp = 0;
 
 
@@ -148,9 +133,9 @@ void Kobayashi::computeGradLap()
 
 void Kobayashi::evolution()
 {
-	for (int j = 0; j < _ny; j++)
+	for (int j = 0; j < _objectCount.y; j++)
 	{
-		for (int i = 0; i < _nx; i++)
+		for (int i = 0; i < _objectCount.x; i++)
 		{
 
 			int jp = j + 1;
@@ -159,13 +144,13 @@ void Kobayashi::evolution()
 			int im = i - 1;
 
 			if (im == -1)
-				im = _nx - 1;
-			else if (ip == _nx)
+				im = _objectCount.x - 1;
+			else if (ip == _objectCount.x)
 				ip = 0;
 
 			if (jm == -1)
-				jm = _ny - 1;
-			else if (jp == _ny)
+				jm = _objectCount.y - 1;
+			else if (jp == _objectCount.y)
 				jp = 0;
 
 			float gradEpsPowX = (_epsilon[_INDEX(ip, j)] * _epsilon[_INDEX(ip, j)] - _epsilon[_INDEX(im, j)] * _epsilon[_INDEX(im, j)]) / _dx;

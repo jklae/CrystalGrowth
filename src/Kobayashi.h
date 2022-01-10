@@ -37,13 +37,11 @@ public:
 	// #######################################################################################
 #pragma endregion
 
-	int _nx;
-	int _ny;
 	std::vector<float> _x;
 	std::vector<float> _y;
 	std::vector<float> _phi;
 
-	Kobayashi(int nx, int ny, float timeStep);
+	Kobayashi(int x, int y, float timeStep);
 
 	void update();
 
@@ -78,8 +76,7 @@ private :
 	std::vector<float> _lapPhi;
 	std::vector<float> _lapT;
 	std::vector<float> _angl;
-
-	void initVector2D(std::vector<std::vector<float>>& vec2D);
+	
 	void computeGradLap();
 	void evolution();
 	void createNuclei(int transX, int transY);

@@ -11,15 +11,15 @@ Kobayashi::Kobayashi(int x, int y, float timeStep)
 	_dx = 0.03f;
 	_dy = 0.03f;
 	_dt = timeStep;
-	tau = 0.0003f;
-	epsilonBar = 0.01f;		// Mean of epsilon. scaling factor that determines how much the microscopic front is magnified
-	mu = 1.0f;
-	K = 1.6f;				// Latent heat 
-	delta = 0.05f;			// Strength of anisotropy (speed of growth in preferred directions)
-	anisotropy = 6.0f;		// Degree of anisotropy
-	alpha = 0.9f;
-	gamma = 10.0f;
-	tEq = 1.0f;
+	_tau = 0.0003f;
+	_epsilonBar = 0.01f;		// Mean of epsilon. scaling factor that determines how much the microscopic front is magnified
+	_mu = 1.0f;
+	_K = 1.6f;				// Latent heat 
+	_delta = 0.05f;			// Strength of anisotropy (speed of growth in preferred directions)
+	_anisotropy = 6.0f;		// Degree of anisotropy
+	_alpha = 0.9f;
+	_gamma = 10.0f;
+	_tEq = 1.0f;
 	//
 
 	size_t vSize = static_cast<size_t>(_objectCount.x) * static_cast<size_t>(_objectCount.y);
@@ -109,8 +109,8 @@ void Kobayashi::_computeGradientLaplacian()
 				_angl[_INDEX(i, j)] = PI_F + atan(_gradPhiY[_INDEX(i, j)] / _gradPhiX[_INDEX(i, j)]);
 
 			
-			_epsilon[_INDEX(i, j)] = epsilonBar * (1.0f + delta * cos(anisotropy * _angl[_INDEX(i, j)]));
-			_epsilonDeriv[_INDEX(i, j)] = -epsilonBar * anisotropy * delta * sin(anisotropy * _angl[_INDEX(i, j)]);
+			_epsilon[_INDEX(i, j)] = _epsilonBar * (1.0f + _delta * cos(_anisotropy * _angl[_INDEX(i, j)]));
+			_epsilonDeriv[_INDEX(i, j)] = -_epsilonBar * _anisotropy * _delta * sin(_anisotropy * _angl[_INDEX(i, j)]);
 
 		}
 	}
@@ -145,7 +145,7 @@ void Kobayashi::_evolution()
 				/ _dx;
 			float term3 = gradEpsPowX * _gradPhiX[_INDEX(i, j)] + gradEpsPowY * _gradPhiY[_INDEX(i, j)];
 
-			float m = alpha / PI_F * atan(gamma*(tEq - _t[_INDEX(i, j)]));
+			float m = _alpha / PI_F * atan(_gamma*(_tEq - _t[_INDEX(i, j)]));
 
 			float oldPhi = _phi[_INDEX(i, j)];
 			float oldT = _t[_INDEX(i, j)];
@@ -153,8 +153,8 @@ void Kobayashi::_evolution()
 			_phi[_INDEX(i, j)] = _phi[_INDEX(i, j)] +
 				(term1 + term2 + _epsilon[_INDEX(i, j)] * _epsilon[_INDEX(i, j)] * _lapPhi[_INDEX(i, j)]
 					+ term3
-					+ oldPhi * (1.0f - oldPhi)*(oldPhi - 0.5f + m))*_dt / tau;
-			_t[_INDEX(i, j)] = oldT + _lapT[_INDEX(i, j)] * _dt + K * (_phi[_INDEX(i, j)] - oldPhi);
+					+ oldPhi * (1.0f - oldPhi)*(oldPhi - 0.5f + m))*_dt / _tau;
+			_t[_INDEX(i, j)] = oldT + _lapT[_INDEX(i, j)] * _dt + _K * (_phi[_INDEX(i, j)] - oldPhi);
 
 
 		}

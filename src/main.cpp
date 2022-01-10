@@ -11,7 +11,7 @@ using namespace DXViewer::xmint3;
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
     // Simulation init
-    int x = 300;
+    int x = 200;
     int y = x;
     float timeStep = 0.0001f;
 

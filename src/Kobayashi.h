@@ -53,15 +53,15 @@ private :
 	float _dx;
 	float _dy;
 	float _dt;
-	float tau;
-	float epsilonBar;
-	float mu;
-	float K;
-	float delta;
-	float anisotropy;
-	float alpha;
-	float gamma;
-	float tEq;
+	float _tau;
+	float _epsilonBar;
+	float _mu;
+	float _K;
+	float _delta;
+	float _anisotropy;
+	float _alpha;
+	float _gamma;
+	float _tEq;
 
 	std::vector<float> _x;
 	std::vector<float> _y;

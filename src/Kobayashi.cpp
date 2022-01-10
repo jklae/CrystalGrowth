@@ -42,9 +42,9 @@ Kobayashi::Kobayashi(int x, int y, float timeStep)
 		_x[i] = i - _objectCount.x / 2.0;
 	}
 
-	for (int i = 0; i < _objectCount.y; i++)
+	for (int j = 0; j < _objectCount.y; j++)
 	{
-		_y[i] = i - _objectCount.y / 2.0;
+		_y[j] = j - _objectCount.y / 2.0;
 	}
 
 	// set the nuclei
@@ -64,32 +64,23 @@ void Kobayashi::computeGradLap()
 		for (int i = 0; i < _objectCount.x; i++)
 		{
 
-			int jp = j + 1;
-			int jm = j - 1;
-			int ip = i + 1;
-			int im = i - 1;
-
-			if (im == -1)
-				im = _objectCount.x - 1;
-			else if (ip == _objectCount.x)
-				ip = 0;
-
-			if (jm == -1)
-				jm = _objectCount.y - 1;
-			else if (jp == _objectCount.y)
-				jp = 0;
+			int i_plus = (i + 1) % _objectCount.x;
+			int i_minus = ((i - 1) + _objectCount.x) % _objectCount.x;
+			int j_plus = (j + 1) % _objectCount.y;
+			int j_minus = ((j - 1) + _objectCount.y) % _objectCount.y;
 
 
+			_gradPhiX[_INDEX(i, j)] = (_phi[_INDEX(i_plus, j)] - _phi[_INDEX(i_minus, j)]) / _dx;
+			_gradPhiY[_INDEX(i, j)] = (_phi[_INDEX(i, j_plus)] - _phi[_INDEX(i, j_minus)]) / _dy;
 
-			_gradPhiX[_INDEX(i, j)] = (_phi[_INDEX(ip, j)] - _phi[_INDEX(im, j)]) / _dx;
-			_gradPhiY[_INDEX(i, j)] = (_phi[_INDEX(i, jp)] - _phi[_INDEX(i, jm)]) / _dy;
-
-			_lapPhi[_INDEX(i, j)] = (2.0f * (_phi[_INDEX(ip, j)] + _phi[_INDEX(im, j)] + _phi[_INDEX(i, jp)] + _phi[_INDEX(i, jm)])
-				+ _phi[_INDEX(ip, jp)] + _phi[_INDEX(im, jm)] + _phi[_INDEX(im, jp)] + _phi[_INDEX(ip, jm)]
+			_lapPhi[_INDEX(i, j)] = 
+				(2.0f * (_phi[_INDEX(i_plus, j)] + _phi[_INDEX(i_minus, j)] + _phi[_INDEX(i, j_plus)] + _phi[_INDEX(i, j_minus)])
+				+ _phi[_INDEX(i_plus, j_plus)] + _phi[_INDEX(i_minus, j_minus)] + _phi[_INDEX(i_minus, j_plus)] + _phi[_INDEX(i_plus, j_minus)]
 				- 12.0f * _phi[_INDEX(i, j)])
 				/ (3.0f * _dx * _dx);
-			_lapT[_INDEX(i, j)] = (2.0f * (_t[_INDEX(ip, j)] + _t[_INDEX(im, j)] + _t[_INDEX(i, jp)] + _t[_INDEX(i, jm)])
-				+ _t[_INDEX(ip, jp)] + _t[_INDEX(im, jm)] + _t[_INDEX(im, jp)] + _t[_INDEX(ip, jm)]
+			_lapT[_INDEX(i, j)] = 
+				(2.0f * (_t[_INDEX(i_plus, j)] + _t[_INDEX(i_minus, j)] + _t[_INDEX(i, j_plus)] + _t[_INDEX(i, j_minus)])
+				+ _t[_INDEX(i_plus, j_plus)] + _t[_INDEX(i_minus, j_minus)] + _t[_INDEX(i_minus, j_plus)] + _t[_INDEX(i_plus, j_minus)]
 				- 12.0f * _t[_INDEX(i, j)])
 				/ (3.0f * _dx * _dx);
 
@@ -124,30 +115,25 @@ void Kobayashi::evolution()
 		for (int i = 0; i < _objectCount.x; i++)
 		{
 
-			int jp = j + 1;
-			int jm = j - 1;
-			int ip = i + 1;
-			int im = i - 1;
+			int i_plus = (i + 1) % _objectCount.x;
+			int i_minus = ((i - 1) + _objectCount.x) % _objectCount.x;
+			int j_plus = (j + 1) % _objectCount.y;
+			int j_minus = ((j - 1) + _objectCount.y) % _objectCount.y;
 
-			if (im == -1)
-				im = _objectCount.x - 1;
-			else if (ip == _objectCount.x)
-				ip = 0;
 
-			if (jm == -1)
-				jm = _objectCount.y - 1;
-			else if (jp == _objectCount.y)
-				jp = 0;
+			float gradEpsPowX = 
+				(_epsilon[_INDEX(i_plus, j)] * _epsilon[_INDEX(i_plus, j)] 
+					- _epsilon[_INDEX(i_minus, j)] * _epsilon[_INDEX(i_minus, j)]) / _dx;
+			float gradEpsPowY = 
+				(_epsilon[_INDEX(i, j_plus)] * _epsilon[_INDEX(i, j_plus)] 
+					- _epsilon[_INDEX(i, j_minus)] * _epsilon[_INDEX(i, j_minus)]) / _dy;
 
-			float gradEpsPowX = (_epsilon[_INDEX(ip, j)] * _epsilon[_INDEX(ip, j)] - _epsilon[_INDEX(im, j)] * _epsilon[_INDEX(im, j)]) / _dx;
-			float gradEpsPowY = (_epsilon[_INDEX(i, jp)] * _epsilon[_INDEX(i, jp)] - _epsilon[_INDEX(i, jm)] * _epsilon[_INDEX(i, jm)]) / _dy;
-
-			float term1 = (_epsilon[_INDEX(i, jp)] * _epsilonDeriv[_INDEX(i, jp)] * _gradPhiX[_INDEX(i, jp)]
-				- _epsilon[_INDEX(i, jm)] * _epsilonDeriv[_INDEX(i, jm)] * _gradPhiX[_INDEX(i, jm)])
+			float term1 = (_epsilon[_INDEX(i, j_plus)] * _epsilonDeriv[_INDEX(i, j_plus)] * _gradPhiX[_INDEX(i, j_plus)]
+				- _epsilon[_INDEX(i, j_minus)] * _epsilonDeriv[_INDEX(i, j_minus)] * _gradPhiX[_INDEX(i, j_minus)])
 				/ _dy;
 
-			float term2 = -(_epsilon[_INDEX(ip, j)] * _epsilonDeriv[_INDEX(ip, j)] * _gradPhiY[_INDEX(ip, j)]
-				- _epsilon[_INDEX(im, j)] * _epsilonDeriv[_INDEX(im, j)] * _gradPhiY[_INDEX(im, j)])
+			float term2 = -(_epsilon[_INDEX(i_plus, j)] * _epsilonDeriv[_INDEX(i_plus, j)] * _gradPhiY[_INDEX(i_plus, j)]
+				- _epsilon[_INDEX(i_minus, j)] * _epsilonDeriv[_INDEX(i_minus, j)] * _gradPhiY[_INDEX(i_minus, j)])
 				/ _dx;
 			float term3 = gradEpsPowX * _gradPhiX[_INDEX(i, j)] + gradEpsPowY * _gradPhiY[_INDEX(i, j)];
 
@@ -176,9 +162,9 @@ void Kobayashi::update()
 
 
 
-#pragma region Implementation
-// ################################## Implementation ####################################
-// Simulation methods
+#pragma region i_minusplementation
+// ################################## i_minusplementation ####################################
+// Si_minusulation methods
 void Kobayashi::iUpdate()
 {
 	update();
@@ -252,7 +238,8 @@ void Kobayashi::iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffe
 	int j = i / (int)(sqrt(size));
 	int k = i % (int)(sqrt(size));
 
-	constantBuffer[i].color = { (float)_phi[_INDEX(j, k)], (float)_phi[_INDEX(j, k)], (float)_phi[_INDEX(j, k)], 1.0f };
+	float phi = _phi[_INDEX(j, k)];
+	constantBuffer[i].color = { phi, phi, phi, 1.0f };
 }
 
 void Kobayashi::iDraw(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, int i)

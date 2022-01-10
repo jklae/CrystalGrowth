@@ -29,16 +29,14 @@ Kobayashi::Kobayashi(int nx, int ny, float timeStep) :
 	_y.assign(vSize, 0.0f);
 	_phi.assign(vSize, 0.0f);
 
-	//initVector2D(_phi);
-	initVector2D(_t);
-	initVector2D(_gradPhiX);
-	initVector2D(_gradPhiY);
-	initVector2D(_lapPhi);
-	initVector2D(_lapT);
-
-	initVector2D(_angl);
-	initVector2D(_epsilon);
-	initVector2D(_epsilonDeriv);
+	_t.assign(vSize, 0.0f);
+	_gradPhiX.assign(vSize, 0.0f);
+	_gradPhiY.assign(vSize, 0.0f);
+	_lapPhi.assign(vSize, 0.0f);
+	_lapT.assign(vSize, 0.0f);
+	_angl.assign(vSize, 0.0f);
+	_epsilon.assign(vSize, 0.0f);
+	_epsilonDeriv.assign(vSize, 0.0f);
 
 	// set the position
 	for (int i = 0; i < _nx; i++)
@@ -110,39 +108,39 @@ void Kobayashi::computeGradLap()
 
 
 
-			_gradPhiX[i][j] = (_phi[_INDEX(ip, j)] - _phi[_INDEX(im, j)]) / _dx;
-			_gradPhiY[i][j] = (_phi[_INDEX(i, jp)] - _phi[_INDEX(i, jm)]) / _dy;
+			_gradPhiX[_INDEX(i, j)] = (_phi[_INDEX(ip, j)] - _phi[_INDEX(im, j)]) / _dx;
+			_gradPhiY[_INDEX(i, j)] = (_phi[_INDEX(i, jp)] - _phi[_INDEX(i, jm)]) / _dy;
 
-			_lapPhi[i][j] = (2.0f * (_phi[_INDEX(ip, j)] + _phi[_INDEX(im, j)] + _phi[_INDEX(i, jp)] + _phi[_INDEX(i, jm)])
+			_lapPhi[_INDEX(i, j)] = (2.0f * (_phi[_INDEX(ip, j)] + _phi[_INDEX(im, j)] + _phi[_INDEX(i, jp)] + _phi[_INDEX(i, jm)])
 				+ _phi[_INDEX(ip, jp)] + _phi[_INDEX(im, jm)] + _phi[_INDEX(im, jp)] + _phi[_INDEX(ip, jm)]
 				- 12.0f * _phi[_INDEX(i, j)])
 				/ (3.0f * _dx * _dx);
-			_lapT[i][j] = (2.0f * (_t[ip][j] + _t[im][j] + _t[i][jp] + _t[i][jm])
-				+ _t[ip][jp] + _t[im][jm] + _t[im][jp] + _t[ip][jm]
-				- 12.0f * _t[i][j])
+			_lapT[_INDEX(i, j)] = (2.0f * (_t[_INDEX(ip, j)] + _t[_INDEX(im, j)] + _t[_INDEX(i, jp)] + _t[_INDEX(i, jm)])
+				+ _t[_INDEX(ip, jp)] + _t[_INDEX(im, jm)] + _t[_INDEX(im, jp)] + _t[_INDEX(ip, jm)]
+				- 12.0f * _t[_INDEX(i, j)])
 				/ (3.0f * _dx * _dx);
 
 
-			if (_gradPhiX[i][j] <= +EPS_F && _gradPhiX[i][j] >= -EPS_F) // _gradPhiX[i][j] == 0.0f
-				if (_gradPhiY[i][j] < -EPS_F)
-					_angl[i][j] = -0.5f * PI_F;
-				else if (_gradPhiY[i][j] > +EPS_F)
-					_angl[i][j] = 0.5f * PI_F;
+			if (_gradPhiX[_INDEX(i, j)] <= +EPS_F && _gradPhiX[_INDEX(i, j)] >= -EPS_F) // _gradPhiX[i][j] == 0.0f
+				if (_gradPhiY[_INDEX(i, j)] < -EPS_F)
+					_angl[_INDEX(i, j)] = -0.5f * PI_F;
+				else if (_gradPhiY[_INDEX(i, j)] > +EPS_F)
+					_angl[_INDEX(i, j)] = 0.5f * PI_F;
 
-			if (_gradPhiX[i][j] > +EPS_F)
-				if (_gradPhiY[i][j] < -EPS_F)
-					_angl[i][j] = 2.0f * PI_F + atan(_gradPhiY[i][j] / _gradPhiX[i][j]);
-				else if (_gradPhiY[i][j] > +EPS_F)
-					_angl[i][j] = atan(_gradPhiY[i][j] / _gradPhiX[i][j]);
+			if (_gradPhiX[_INDEX(i, j)] > +EPS_F)
+				if (_gradPhiY[_INDEX(i, j)] < -EPS_F)
+					_angl[_INDEX(i, j)] = 2.0f * PI_F + atan(_gradPhiY[_INDEX(i, j)] / _gradPhiX[_INDEX(i, j)]);
+				else if (_gradPhiY[_INDEX(i, j)] > +EPS_F)
+					_angl[_INDEX(i, j)] = atan(_gradPhiY[_INDEX(i, j)] / _gradPhiX[_INDEX(i, j)]);
 
-			if (_gradPhiX[i][j] < -EPS_F)
-				_angl[i][j] = PI_F + atan(_gradPhiY[i][j] / _gradPhiX[i][j]);
-
-
+			if (_gradPhiX[_INDEX(i, j)] < -EPS_F)
+				_angl[_INDEX(i, j)] = PI_F + atan(_gradPhiY[_INDEX(i, j)] / _gradPhiX[_INDEX(i, j)]);
 
 
-			_epsilon[i][j] = epsilonBar * (1.0f + delta * cos(anisotropy * _angl[i][j]));
-			_epsilonDeriv[i][j] = -epsilonBar * anisotropy * delta * sin(anisotropy * _angl[i][j]);
+
+
+			_epsilon[_INDEX(i, j)] = epsilonBar * (1.0f + delta * cos(anisotropy * _angl[_INDEX(i, j)]));
+			_epsilonDeriv[_INDEX(i, j)] = -epsilonBar * anisotropy * delta * sin(anisotropy * _angl[_INDEX(i, j)]);
 
 		}
 	}
@@ -170,28 +168,28 @@ void Kobayashi::evolution()
 			else if (jp == _ny)
 				jp = 0;
 
-			float gradEpsPowX = (_epsilon[ip][j] * _epsilon[ip][j] - _epsilon[im][j] * _epsilon[im][j]) / _dx;
-			float gradEpsPowY = (_epsilon[i][jp] * _epsilon[i][jp] - _epsilon[i][jm] * _epsilon[i][jm]) / _dy;
+			float gradEpsPowX = (_epsilon[_INDEX(ip, j)] * _epsilon[_INDEX(ip, j)] - _epsilon[_INDEX(im, j)] * _epsilon[_INDEX(im, j)]) / _dx;
+			float gradEpsPowY = (_epsilon[_INDEX(i, jp)] * _epsilon[_INDEX(i, jp)] - _epsilon[_INDEX(i, jm)] * _epsilon[_INDEX(i, jm)]) / _dy;
 
-			float term1 = (_epsilon[i][jp] * _epsilonDeriv[i][jp] * _gradPhiX[i][jp]
-				- _epsilon[i][jm] * _epsilonDeriv[i][jm] * _gradPhiX[i][jm])
+			float term1 = (_epsilon[_INDEX(i, jp)] * _epsilonDeriv[_INDEX(i, jp)] * _gradPhiX[_INDEX(i, jp)]
+				- _epsilon[_INDEX(i, jm)] * _epsilonDeriv[_INDEX(i, jm)] * _gradPhiX[_INDEX(i, jm)])
 				/ _dy;
 
-			float term2 = -(_epsilon[ip][j] * _epsilonDeriv[ip][j] * _gradPhiY[ip][j]
-				- _epsilon[im][j] * _epsilonDeriv[im][j] * _gradPhiY[im][j])
+			float term2 = -(_epsilon[_INDEX(ip, j)] * _epsilonDeriv[_INDEX(ip, j)] * _gradPhiY[_INDEX(ip, j)]
+				- _epsilon[_INDEX(im, j)] * _epsilonDeriv[_INDEX(im, j)] * _gradPhiY[_INDEX(im, j)])
 				/ _dx;
-			float term3 = gradEpsPowX * _gradPhiX[i][j] + gradEpsPowY * _gradPhiY[i][j];
+			float term3 = gradEpsPowX * _gradPhiX[_INDEX(i, j)] + gradEpsPowY * _gradPhiY[_INDEX(i, j)];
 
-			float m = alpha / PI_F * atan(gamma*(tEq - _t[i][j]));
+			float m = alpha / PI_F * atan(gamma*(tEq - _t[_INDEX(i, j)]));
 
 			float oldPhi = _phi[_INDEX(i, j)];
-			float oldT = _t[i][j];
+			float oldT = _t[_INDEX(i, j)];
 
 			_phi[_INDEX(i, j)] = _phi[_INDEX(i, j)] +
-				(term1 + term2 + _epsilon[i][j] * _epsilon[i][j] * _lapPhi[i][j]
+				(term1 + term2 + _epsilon[_INDEX(i, j)] * _epsilon[_INDEX(i, j)] * _lapPhi[_INDEX(i, j)]
 					+ term3
 					+ oldPhi * (1.0f - oldPhi)*(oldPhi - 0.5f + m))*_dt / tau;
-			_t[i][j] = oldT + _lapT[i][j] * _dt + K * (_phi[_INDEX(i, j)] - oldPhi);
+			_t[_INDEX(i, j)] = oldT + _lapT[_INDEX(i, j)] * _dt + K * (_phi[_INDEX(i, j)] - oldPhi);
 
 
 		}

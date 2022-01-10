@@ -70,14 +70,14 @@ private :
 	float gamma;
 	float tEq;
 
-	std::vector<std::vector<float>> _t;
-	std::vector<std::vector<float>> _epsilon;
-	std::vector<std::vector<float>> _epsilonDeriv;
-	std::vector<std::vector<float>> _gradPhiX;
-	std::vector<std::vector<float>> _gradPhiY;
-	std::vector<std::vector<float>> _lapPhi;
-	std::vector<std::vector<float>> _lapT;
-	std::vector<std::vector<float>> _angl;
+	std::vector<float> _t;
+	std::vector<float> _epsilon;
+	std::vector<float> _epsilonDeriv;
+	std::vector<float> _gradPhiX;
+	std::vector<float> _gradPhiY;
+	std::vector<float> _lapPhi;
+	std::vector<float> _lapT;
+	std::vector<float> _angl;
 
 	void initVector2D(std::vector<std::vector<float>>& vec2D);
 	void computeGradLap();

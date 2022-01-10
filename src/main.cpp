@@ -11,7 +11,7 @@ using namespace DXViewer::xmint3;
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
     // Simulation init
-    int x = 100;
+    int x = 300;
     int y = x;
     float timeStep = 0.0001f;
 
@@ -21,10 +21,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     DX12App* dxapp = new DX12App();
     dxapp->setCameraProperties(
         PROJ::ORTHOGRAPHIC,
-        static_cast<float>(max_element(crystalsim->iGetObjectCount())) * 0.0023f, // orthogonal distance
+        static_cast<float>(max_element(crystalsim->iGetObjectCount())) * 0.0013f, // orthogonal distance
         2.0f, 0.0f, 0.0f                                                       // radius, theta, phi
     );
-    //dxapp->setCameraProperties(PROJ::PERSPECTIVE, 0.0f, 1.5f, 0.0f, 0.0f);
+    //dxapp->setCameraProperties(PROJ::PERSPECTIVE, 0.0f, 1.3f, 0.0f, 0.0f);
     dxapp->setBackgroundColor(DirectX::Colors::LightSlateGray);
 
     // Window init

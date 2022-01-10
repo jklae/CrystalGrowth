@@ -22,12 +22,14 @@ Kobayashi::Kobayashi(int nx, int ny, float timeStep) :
 	alpha = 0.9f;
 	gamma = 10.0f;
 	tEq = 1.0f;
-	//sdas
+	//
 
-	_x.resize(_nx);
-	_y.resize(_ny);
+	size_t vSize = static_cast<size_t>(_objectCount.x) * static_cast<size_t>(_objectCount.y);
+	_x.assign(vSize, 0.0f);
+	_y.assign(vSize, 0.0f);
+	_phi.assign(vSize, 0.0f);
 
-	initVector2D(_phi);
+	//initVector2D(_phi);
 	initVector2D(_t);
 	initVector2D(_gradPhiX);
 	initVector2D(_gradPhiY);
@@ -49,14 +51,6 @@ Kobayashi::Kobayashi(int nx, int ny, float timeStep) :
 		_y[i] = i - _ny / 2.0;
 	}
 
-	for (int j = 0; j < _ny; j++)
-	{
-		for (int i = 0; i < _nx; i++)
-		{
-			_phi[i][j] = 0.0;
-		}
-	}
-
 	// set the nuclei
 	createNuclei(0, 0);
 
@@ -73,7 +67,7 @@ void Kobayashi::createNuclei(int transX, int transY)
 
 			// circle equation
 			if (iIdx * iIdx + jIdx * jIdx < 10)
-				_phi[i][j] = 1.0;
+				_phi[_INDEX(i, j)] = 1.0;
 
 
 		}
@@ -116,12 +110,12 @@ void Kobayashi::computeGradLap()
 
 
 
-			_gradPhiX[i][j] = (_phi[ip][j] - _phi[im][j]) / _dx;
-			_gradPhiY[i][j] = (_phi[i][jp] - _phi[i][jm]) / _dy;
+			_gradPhiX[i][j] = (_phi[_INDEX(ip, j)] - _phi[_INDEX(im, j)]) / _dx;
+			_gradPhiY[i][j] = (_phi[_INDEX(i, jp)] - _phi[_INDEX(i, jm)]) / _dy;
 
-			_lapPhi[i][j] = (2.0f * (_phi[ip][j] + _phi[im][j] + _phi[i][jp] + _phi[i][jm])
-				+ _phi[ip][jp] + _phi[im][jm] + _phi[im][jp] + _phi[ip][jm]
-				- 12.0f * _phi[i][j])
+			_lapPhi[i][j] = (2.0f * (_phi[_INDEX(ip, j)] + _phi[_INDEX(im, j)] + _phi[_INDEX(i, jp)] + _phi[_INDEX(i, jm)])
+				+ _phi[_INDEX(ip, jp)] + _phi[_INDEX(im, jm)] + _phi[_INDEX(im, jp)] + _phi[_INDEX(ip, jm)]
+				- 12.0f * _phi[_INDEX(i, j)])
 				/ (3.0f * _dx * _dx);
 			_lapT[i][j] = (2.0f * (_t[ip][j] + _t[im][j] + _t[i][jp] + _t[i][jm])
 				+ _t[ip][jp] + _t[im][jm] + _t[im][jp] + _t[ip][jm]
@@ -190,14 +184,14 @@ void Kobayashi::evolution()
 
 			float m = alpha / PI_F * atan(gamma*(tEq - _t[i][j]));
 
-			float oldPhi = _phi[i][j];
+			float oldPhi = _phi[_INDEX(i, j)];
 			float oldT = _t[i][j];
 
-			_phi[i][j] = _phi[i][j] +
+			_phi[_INDEX(i, j)] = _phi[_INDEX(i, j)] +
 				(term1 + term2 + _epsilon[i][j] * _epsilon[i][j] * _lapPhi[i][j]
 					+ term3
 					+ oldPhi * (1.0f - oldPhi)*(oldPhi - 0.5f + m))*_dt / tau;
-			_t[i][j] = oldT + _lapT[i][j] * _dt + K * (_phi[i][j] - oldPhi);
+			_t[i][j] = oldT + _lapT[i][j] * _dt + K * (_phi[_INDEX(i, j)] - oldPhi);
 
 
 		}
@@ -289,7 +283,7 @@ void Kobayashi::iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffe
 	int j = i / (int)(sqrt(size));
 	int k = i % (int)(sqrt(size));
 
-	constantBuffer[i].color = { (float)_phi[j][k], (float)_phi[j][k], (float)_phi[j][k], 1.0f };
+	constantBuffer[i].color = { (float)_phi[_INDEX(j, k)], (float)_phi[_INDEX(j, k)], (float)_phi[_INDEX(j, k)], 1.0f };
 }
 
 void Kobayashi::iDraw(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, int i)

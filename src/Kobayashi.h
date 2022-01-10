@@ -41,13 +41,15 @@ public:
 	int _ny;
 	std::vector<float> _x;
 	std::vector<float> _y;
-	std::vector<std::vector<float>> _phi;
+	std::vector<float> _phi;
 
 	Kobayashi(int nx, int ny, float timeStep);
 
 	void update();
 
 private :
+	inline int _INDEX(int i, int j) { return (i + _objectCount.x * j); };
+
 	std::vector<Vertex> _vertices;
 	std::vector<unsigned int> _indices;
 

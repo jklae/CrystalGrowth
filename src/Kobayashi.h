@@ -79,5 +79,4 @@ private :
 	
 	void computeGradLap();
 	void evolution();
-	void createNuclei(int transX, int transY);
 };

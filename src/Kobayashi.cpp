@@ -48,24 +48,12 @@ Kobayashi::Kobayashi(int x, int y, float timeStep)
 	}
 
 	// set the nuclei
-	createNuclei(0, 0);
-
-}
-
-void Kobayashi::createNuclei(int transX, int transY)
-{
-	for (int j = 0; j < _objectCount.y; j++)
-	{
-		for (int i = 0; i < _objectCount.x; i++)
-		{
-			int iIdx = (i - (_objectCount.x / 2) + transX);
-			int jIdx = (j - (_objectCount.y / 2) + transY);
-
-			// circle equation
-			if (iIdx * iIdx + jIdx * jIdx < 10)
-				_phi[_INDEX(i, j)] = 1.0;
-		}
-	}
+	XMINT2 center = { _objectCount.x / 2 , _objectCount.y / 2 };
+	_phi[_INDEX(center.x, center.y)] = 1.0f;
+	_phi[_INDEX(center.x - 1, center.y)] = 1.0f;
+	_phi[_INDEX(center.x + 1, center.y)] = 1.0f;
+	_phi[_INDEX(center.x, center.y - 1)] = 1.0f;
+	_phi[_INDEX(center.x, center.y + 1)] = 1.0f;
 }
 
 void Kobayashi::computeGradLap()
@@ -121,9 +109,7 @@ void Kobayashi::computeGradLap()
 			if (_gradPhiX[_INDEX(i, j)] < -EPS_F)
 				_angl[_INDEX(i, j)] = PI_F + atan(_gradPhiY[_INDEX(i, j)] / _gradPhiX[_INDEX(i, j)]);
 
-
-
-
+			
 			_epsilon[_INDEX(i, j)] = epsilonBar * (1.0f + delta * cos(anisotropy * _angl[_INDEX(i, j)]));
 			_epsilonDeriv[_INDEX(i, j)] = -epsilonBar * anisotropy * delta * sin(anisotropy * _angl[_INDEX(i, j)]);
 

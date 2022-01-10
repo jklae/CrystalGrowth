@@ -162,12 +162,11 @@ void Kobayashi::_evolution()
 	}
 }
 
-void Kobayashi::_update()
+wchar_t* Kobayashi::_int2wchar(int value)
 {
-	_computeGradientLaplacian();
-	_evolution();
+	_itow(value, wBuffer, 10);
+	return wBuffer;
 }
-
 
 
 #pragma region implementation
@@ -175,7 +174,13 @@ void Kobayashi::_update()
 // Simulation methods
 void Kobayashi::iUpdate()
 {
-	_update();
+	clock_t startTime = clock();
+	_computeGradientLaplacian();
+	_evolution();
+	clock_t endTime = clock();
+
+	_simTime += endTime - startTime; // ms
+	_simFrame++;
 }
 
 void Kobayashi::iResetSimulationState(std::vector<ConstantBuffer>& constantBuffer)
@@ -288,6 +293,23 @@ bool Kobayashi::iIsUpdated()
 
 void Kobayashi::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 {
+	CreateWindow(L"button", _updateFlag ? L"¡«" : L"¢º", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+		65, 290, 50, 25, hwnd, reinterpret_cast<HMENU>(_COM::PLAY), hInstance, NULL);
+	CreateWindow(L"button", L"¡á", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+		115, 290, 50, 25, hwnd, reinterpret_cast<HMENU>(_COM::STOP), hInstance, NULL);
+	CreateWindow(L"button", L"¢ºl", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+		165, 290, 50, 25, hwnd, reinterpret_cast<HMENU>(_COM::NEXTSTEP), hInstance, NULL);
+
+	CreateWindow(L"static", L"time :", WS_CHILD | WS_VISIBLE,
+		95, 340, 40, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+	CreateWindow(L"static", _int2wchar(_simTime), WS_CHILD | WS_VISIBLE,
+		140, 340, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::TIME_TEXT), hInstance, NULL);
+	CreateWindow(L"static", L"frame :", WS_CHILD | WS_VISIBLE,
+		86, 360, 45, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+	CreateWindow(L"static", _int2wchar(_simFrame), WS_CHILD | WS_VISIBLE,
+		140, 360, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::FRAME_TEXT), hInstance, NULL);
+
+	SetTimer(hwnd, 1, 10, NULL);
 }
 
 void Kobayashi::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance)
@@ -300,10 +322,13 @@ void Kobayashi::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hI
 
 void Kobayashi::iWMTimer(HWND hwnd)
 {
+	SetDlgItemText(hwnd, static_cast<int>(_COM::TIME_TEXT), _int2wchar(_simTime));
+	SetDlgItemText(hwnd, static_cast<int>(_COM::FRAME_TEXT), _int2wchar(_simFrame));
 }
 
 void Kobayashi::iWMDestory(HWND hwnd)
 {
+	KillTimer(hwnd, 1);
 }
 
 // #######################################################################################

@@ -1,8 +1,8 @@
 #pragma once
 // Console window is displayed in debug mode.
-//#ifdef _DEBUG
+#ifdef _DEBUG
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
-//#endif
+#endif
 
 #include "Kobayashi.h"
 

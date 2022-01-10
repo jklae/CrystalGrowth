@@ -41,14 +41,28 @@ public:
 #pragma endregion
 
 private :
-	inline int _INDEX(int i, int j) { return (i + _objectCount.x * j); };
+	enum class _COM
+	{
+		PLAY, STOP, NEXTSTEP,
+		TIME_TEXT, FRAME_TEXT
+	};
+
+	clock_t _simTime = 0;
+	int _simFrame = 0;
 
 	std::vector<Vertex> _vertices;
 	std::vector<unsigned int> _indices;
+	DirectX::XMINT2 _objectCount = { 0, 0 };
 
 	DX12App* _dxapp = nullptr;
 
-	DirectX::XMINT2 _objectCount = { 0, 0 };
+	float _updateFlag = true;
+
+	wchar_t wBuffer[5];
+	wchar_t* _int2wchar(int value);
+
+	//
+	inline int _INDEX(int i, int j) { return (i + _objectCount.x * j); };
 
 	float _dx;
 	float _dy;
@@ -79,6 +93,4 @@ private :
 	void _createNucleus(int x, int y);
 	void _computeGradientLaplacian();
 	void _evolution();
-
-	void _update();
 };

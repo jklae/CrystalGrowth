@@ -5,6 +5,9 @@
 class Kobayashi : public ISimulation
 {
 public:
+	Kobayashi(int x, int y, float timeStep);
+	~Kobayashi() override;
+
 #pragma region Implementation
 	// ################################## Implementation ####################################
 	// Simulation methods
@@ -37,14 +40,6 @@ public:
 	// #######################################################################################
 #pragma endregion
 
-	std::vector<float> _x;
-	std::vector<float> _y;
-	std::vector<float> _phi;
-
-	Kobayashi(int x, int y, float timeStep);
-
-	void update();
-
 private :
 	inline int _INDEX(int i, int j) { return (i + _objectCount.x * j); };
 
@@ -68,6 +63,10 @@ private :
 	float gamma;
 	float tEq;
 
+	std::vector<float> _x;
+	std::vector<float> _y;
+	std::vector<float> _phi;
+
 	std::vector<float> _t;
 	std::vector<float> _epsilon;
 	std::vector<float> _epsilonDeriv;
@@ -77,6 +76,9 @@ private :
 	std::vector<float> _lapT;
 	std::vector<float> _angl;
 	
-	void computeGradLap();
-	void evolution();
+	void _createNucleus(int x, int y);
+	void _computeGradientLaplacian();
+	void _evolution();
+
+	void _update();
 };

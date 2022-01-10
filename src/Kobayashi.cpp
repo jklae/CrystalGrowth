@@ -12,11 +12,11 @@ Kobayashi::Kobayashi(int x, int y, float timeStep)
 	_dy = 0.03f;
 	_dt = timeStep;
 	tau = 0.0003f;
-	epsilonBar = 0.01f;		// mean of epsilon. scaling factor that determines how much the microscopic front is magnified
+	epsilonBar = 0.01f;		// Mean of epsilon. scaling factor that determines how much the microscopic front is magnified
 	mu = 1.0f;
-	K = 1.6f;				// latent heat 
-	delta = 0.05f;			// strength of anisotropy (speed of growth in preferred directions)
-	anisotropy = 6.0f;		// degree of anisotropy
+	K = 1.6f;				// Latent heat 
+	delta = 0.05f;			// Strength of anisotropy (speed of growth in preferred directions)
+	anisotropy = 6.0f;		// Degree of anisotropy
 	alpha = 0.9f;
 	gamma = 10.0f;
 	tEq = 1.0f;
@@ -36,7 +36,7 @@ Kobayashi::Kobayashi(int x, int y, float timeStep)
 	_epsilon.assign(vSize, 0.0f);
 	_epsilonDeriv.assign(vSize, 0.0f);
 
-	// set the position
+	// Set the position
 	for (int i = 0; i < _objectCount.x; i++)
 	{
 		_x[i] = i - _objectCount.x / 2.0;
@@ -47,16 +47,24 @@ Kobayashi::Kobayashi(int x, int y, float timeStep)
 		_y[j] = j - _objectCount.y / 2.0;
 	}
 
-	// set the nuclei
-	XMINT2 center = { _objectCount.x / 2 , _objectCount.y / 2 };
-	_phi[_INDEX(center.x, center.y)] = 1.0f;
-	_phi[_INDEX(center.x - 1, center.y)] = 1.0f;
-	_phi[_INDEX(center.x + 1, center.y)] = 1.0f;
-	_phi[_INDEX(center.x, center.y - 1)] = 1.0f;
-	_phi[_INDEX(center.x, center.y + 1)] = 1.0f;
+	// Create the neuclei
+	_createNucleus(_objectCount.x / 2 , _objectCount.y / 2);
 }
 
-void Kobayashi::computeGradLap()
+Kobayashi::~Kobayashi()
+{
+}
+
+void Kobayashi::_createNucleus(int x, int y)
+{
+	_phi[_INDEX(x, y)] = 1.0f;
+	_phi[_INDEX(x - 1, y)] = 1.0f;
+	_phi[_INDEX(x + 1, y)] = 1.0f;
+	_phi[_INDEX(x, y - 1)] = 1.0f;
+	_phi[_INDEX(x, y + 1)] = 1.0f;
+}
+
+void Kobayashi::_computeGradientLaplacian()
 {
 
 	for (int j = 0; j < _objectCount.y; j++)
@@ -108,7 +116,7 @@ void Kobayashi::computeGradLap()
 	}
 }
 
-void Kobayashi::evolution()
+void Kobayashi::_evolution()
 {
 	for (int j = 0; j < _objectCount.y; j++)
 	{
@@ -154,20 +162,20 @@ void Kobayashi::evolution()
 	}
 }
 
-void Kobayashi::update()
+void Kobayashi::_update()
 {
-	computeGradLap();
-	evolution();
+	_computeGradientLaplacian();
+	_evolution();
 }
 
 
 
-#pragma region i_minusplementation
-// ################################## i_minusplementation ####################################
-// Si_minusulation methods
+#pragma region implementation
+// ################################## implementation ####################################
+// Simulation methods
 void Kobayashi::iUpdate()
 {
-	update();
+	_update();
 }
 
 void Kobayashi::iResetSimulationState(std::vector<ConstantBuffer>& constantBuffer)

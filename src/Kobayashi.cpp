@@ -12,7 +12,7 @@ Kobayashi::Kobayashi(int x, int y, float timeStep)
 	_dy = 0.03f;
 	_dt = timeStep;
 	_tau = 0.0003f;
-	_epsilonBar = 0.01f;		// Mean of epsilon. scaling factor that determines how much the microscopic front is magnified
+	_epsilonBar = 0.01f;	// Mean of epsilon. scaling factor that determines how much the microscopic front is magnified
 	_mu = 1.0f;
 	_K = 1.6f;				// Latent heat 
 	_delta = 0.05f;			// Strength of anisotropy (speed of growth in preferred directions)

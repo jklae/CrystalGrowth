@@ -1,0 +1,3 @@
+[submodule "ext/DXViewer"]
+	path = ext/DXViewer
+	url = https://github.com/frostsim/DXViewer.git

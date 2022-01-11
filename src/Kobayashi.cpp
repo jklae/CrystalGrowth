@@ -7,22 +7,20 @@ Kobayashi::Kobayashi(int x, int y, float timeStep)
 {
 	_objectCount = { x, y };
 
-	size_t vSize = static_cast<size_t>(_objectCount.x) * static_cast<size_t>(_objectCount.y);
-	_phi.assign(vSize, 0.0f);
-
-	_t.assign(vSize, 0.0f);
-	_gradPhiX.assign(vSize, 0.0f);
-	_gradPhiY.assign(vSize, 0.0f);
-	_lapPhi.assign(vSize, 0.0f);
-	_lapT.assign(vSize, 0.0f);
-	_angl.assign(vSize, 0.0f);
-	_epsilon.assign(vSize, 0.0f);
-	_epsilonDeriv.assign(vSize, 0.0f);
-
-	//
 	_dx = 0.03f;
 	_dy = 0.03f;
 	_dt = timeStep;
+
+	_initialize();
+}
+
+Kobayashi::~Kobayashi()
+{
+}
+
+void Kobayashi::_initialize()
+{
+	//
 	_tau = 0.0003f;
 	_epsilonBar = 0.01f;	// Mean of epsilon. scaling factor that determines how much the microscopic front is magnified
 	_mu = 1.0f;
@@ -34,16 +32,20 @@ Kobayashi::Kobayashi(int x, int y, float timeStep)
 	_tEq = 1.0f;
 	//
 
+	size_t vSize = static_cast<size_t>(_objectCount.x) * static_cast<size_t>(_objectCount.y);
+	_phi.assign(vSize, 0.0f);
+	_t.assign(vSize, 0.0f);
+	_gradPhiX.assign(vSize, 0.0f);
+	_gradPhiY.assign(vSize, 0.0f);
+	_lapPhi.assign(vSize, 0.0f);
+	_lapT.assign(vSize, 0.0f);
+	_angl.assign(vSize, 0.0f);
+	_epsilon.assign(vSize, 0.0f);
+	_epsilonDeriv.assign(vSize, 0.0f);
+
+
 	// Create the neuclei
-	_createNucleus(_objectCount.x / 2 , _objectCount.y / 2);
-}
-
-Kobayashi::~Kobayashi()
-{
-}
-
-void Kobayashi::_initialize()
-{
+	_createNucleus(_objectCount.x / 2, _objectCount.y / 2);
 }
 
 void Kobayashi::_createNucleus(int x, int y)
@@ -176,7 +178,7 @@ void Kobayashi::iUpdate()
 
 void Kobayashi::iResetSimulationState(std::vector<ConstantBuffer>& constantBuffer)
 {
-
+	_initialize();
 }
 
 

@@ -78,7 +78,6 @@ private :
 	float _tEq;
 
 	std::vector<float> _phi;
-
 	std::vector<float> _t;
 	std::vector<float> _epsilon;
 	std::vector<float> _epsilonDeriv;

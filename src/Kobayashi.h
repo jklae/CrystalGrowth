@@ -90,6 +90,7 @@ private :
 	std::vector<float> _lapT;
 	std::vector<float> _angl;
 	
+	void _initialize();
 	void _createNucleus(int x, int y);
 	void _computeGradientLaplacian();
 	void _evolution();

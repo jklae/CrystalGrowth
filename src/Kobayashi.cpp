@@ -7,6 +7,18 @@ Kobayashi::Kobayashi(int x, int y, float timeStep)
 {
 	_objectCount = { x, y };
 
+	size_t vSize = static_cast<size_t>(_objectCount.x) * static_cast<size_t>(_objectCount.y);
+	_phi.assign(vSize, 0.0f);
+
+	_t.assign(vSize, 0.0f);
+	_gradPhiX.assign(vSize, 0.0f);
+	_gradPhiY.assign(vSize, 0.0f);
+	_lapPhi.assign(vSize, 0.0f);
+	_lapT.assign(vSize, 0.0f);
+	_angl.assign(vSize, 0.0f);
+	_epsilon.assign(vSize, 0.0f);
+	_epsilonDeriv.assign(vSize, 0.0f);
+
 	//
 	_dx = 0.03f;
 	_dy = 0.03f;
@@ -22,36 +34,15 @@ Kobayashi::Kobayashi(int x, int y, float timeStep)
 	_tEq = 1.0f;
 	//
 
-	size_t vSize = static_cast<size_t>(_objectCount.x) * static_cast<size_t>(_objectCount.y);
-	_x.assign(vSize, 0.0f);
-	_y.assign(vSize, 0.0f);
-	_phi.assign(vSize, 0.0f);
-
-	_t.assign(vSize, 0.0f);
-	_gradPhiX.assign(vSize, 0.0f);
-	_gradPhiY.assign(vSize, 0.0f);
-	_lapPhi.assign(vSize, 0.0f);
-	_lapT.assign(vSize, 0.0f);
-	_angl.assign(vSize, 0.0f);
-	_epsilon.assign(vSize, 0.0f);
-	_epsilonDeriv.assign(vSize, 0.0f);
-
-	// Set the position
-	for (int i = 0; i < _objectCount.x; i++)
-	{
-		_x[i] = i - _objectCount.x / 2.0;
-	}
-
-	for (int j = 0; j < _objectCount.y; j++)
-	{
-		_y[j] = j - _objectCount.y / 2.0;
-	}
-
 	// Create the neuclei
 	_createNucleus(_objectCount.x / 2 , _objectCount.y / 2);
 }
 
 Kobayashi::~Kobayashi()
+{
+}
+
+void Kobayashi::_initialize()
 {
 }
 
@@ -185,6 +176,7 @@ void Kobayashi::iUpdate()
 
 void Kobayashi::iResetSimulationState(std::vector<ConstantBuffer>& constantBuffer)
 {
+
 }
 
 
@@ -288,7 +280,7 @@ XMFLOAT3 Kobayashi::iGetObjectPositionOffset()
 
 bool Kobayashi::iIsUpdated()
 {
-	return true;
+	return _updateFlag;
 }
 
 void Kobayashi::iWMCreate(HWND hwnd, HINSTANCE hInstance)
@@ -309,11 +301,46 @@ void Kobayashi::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 	CreateWindow(L"static", _int2wchar(_simFrame), WS_CHILD | WS_VISIBLE,
 		140, 360, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::FRAME_TEXT), hInstance, NULL);
 
+	if (_updateFlag)
+	{
+		EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::NEXTSTEP)), false);
+	}
+
 	SetTimer(hwnd, 1, 10, NULL);
 }
 
 void Kobayashi::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance)
 {
+	switch (LOWORD(wParam))
+	{
+		// ### Execution buttons ###
+		case static_cast<int>(_COM::PLAY):
+		{
+			_updateFlag = !_updateFlag;
+			SetDlgItemText(hwnd, static_cast<int>(_COM::PLAY), _updateFlag ? L"бл" : L"в║");
+
+			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::STOP)), true);
+			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::NEXTSTEP)), !_updateFlag);
+		}
+		break;
+		case static_cast<int>(_COM::STOP):
+		{
+			_dxapp->resetSimulationState();
+			_dxapp->update();
+			_dxapp->draw();
+			_simTime = 0;
+			_simFrame = 0;
+		}
+		break;
+		case static_cast<int>(_COM::NEXTSTEP):
+		{
+			iUpdate();
+			_dxapp->update();
+			_dxapp->draw();
+		}
+		break;
+	// #####################
+	}
 }
 
 void Kobayashi::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance)

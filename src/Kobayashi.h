@@ -77,8 +77,6 @@ private :
 	float _gamma;
 	float _tEq;
 
-	std::vector<float> _x;
-	std::vector<float> _y;
 	std::vector<float> _phi;
 
 	std::vector<float> _t;

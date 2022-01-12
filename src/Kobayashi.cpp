@@ -168,8 +168,11 @@ wchar_t* Kobayashi::_int2wchar(int value)
 void Kobayashi::iUpdate()
 {
 	clock_t startTime = clock();
-	_computeGradientLaplacian();
-	_evolution();
+	for (int i = 0; i < 10; i++)
+	{
+		_computeGradientLaplacian();
+		_evolution();
+	}
 	clock_t endTime = clock();
 
 	_simTime += endTime - startTime; // ms
@@ -179,6 +182,11 @@ void Kobayashi::iUpdate()
 void Kobayashi::iResetSimulationState(std::vector<ConstantBuffer>& constantBuffer)
 {
 	_initialize();
+
+	_dxapp->update();
+	_dxapp->draw();
+	_simTime = 0;
+	_simFrame = 0;
 }
 
 
@@ -246,7 +254,14 @@ void Kobayashi::iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffe
 	int k = i % (int)(sqrt(size));
 
 	float phi = _phi[_INDEX(j, k)];
-	constantBuffer[i].color = { phi, phi, phi, 1.0f };
+	XMFLOAT4 color = {0.0f, 0.0f, 0.0f, 1.0f};
+
+	if (phi > 0.1f && phi <= 0.5f)
+		color = { 0.2f, 0.95f, 0.9f, 1.0f };
+	else if (phi > 0.5f)
+		color = { phi, phi, phi, 1.0f };
+
+	constantBuffer[i].color = color;
 }
 
 void Kobayashi::iDraw(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, int i)
@@ -303,10 +318,31 @@ void Kobayashi::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 	CreateWindow(L"static", _int2wchar(_simFrame), WS_CHILD | WS_VISIBLE,
 		140, 360, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::FRAME_TEXT), hInstance, NULL);
 
+
+	CreateWindow(L"static", L"tau :", WS_CHILD | WS_VISIBLE,
+		80, 220, 20, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+	CreateWindow(L"static", L"0.0003", WS_CHILD | WS_VISIBLE,
+		105, 220, 50, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+	HWND tauScroll =
+		CreateWindow(L"scrollbar", NULL, WS_CHILD | WS_VISIBLE | SBS_HORZ,
+			167, 220, 100, 20, hwnd, reinterpret_cast<HMENU>(_COM::ANISO_BAR), hInstance, NULL);
+
+	CreateWindow(L"static", L"anisotropy :", WS_CHILD | WS_VISIBLE,
+		20, 250, 80, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+	CreateWindow(L"static", L"", WS_CHILD | WS_VISIBLE,
+		105, 250, 50, 20, hwnd, reinterpret_cast<HMENU>(_COM::ANISO_VALUE), hInstance, NULL);
+	HWND anisotropyScroll =
+		CreateWindow(L"scrollbar", NULL, WS_CHILD | WS_VISIBLE | SBS_HORZ,
+			167, 250, 100, 20, hwnd, reinterpret_cast<HMENU>(_COM::ANISO_BAR), hInstance, NULL);
+
 	if (_updateFlag)
 	{
 		EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::NEXTSTEP)), false);
 	}
+
+
+	SetScrollRange(anisotropyScroll, SB_CTL, 2, 8, TRUE);
+	SetScrollPos(anisotropyScroll, SB_CTL, _scrollPos, TRUE);
 
 	SetTimer(hwnd, 1, 10, NULL);
 }
@@ -328,10 +364,6 @@ void Kobayashi::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HI
 		case static_cast<int>(_COM::STOP):
 		{
 			_dxapp->resetSimulationState();
-			_dxapp->update();
-			_dxapp->draw();
-			_simTime = 0;
-			_simFrame = 0;
 		}
 		break;
 		case static_cast<int>(_COM::NEXTSTEP):
@@ -347,6 +379,33 @@ void Kobayashi::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HI
 
 void Kobayashi::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance)
 {
+	switch (LOWORD(wParam))
+	{
+	case SB_THUMBTRACK:
+		_scrollPos = HIWORD(wParam);
+		break;
+
+	case SB_LINELEFT:
+		_scrollPos = max(2, _scrollPos - 1);
+		break;
+
+	case SB_LINERIGHT:
+		_scrollPos = min(8, _scrollPos + 1);
+		break;
+
+	case SB_PAGELEFT:
+		_scrollPos = max(2, _scrollPos - 5);
+		break;
+
+	case SB_PAGERIGHT:
+		_scrollPos = min(8, _scrollPos + 5);
+		break;
+	}
+
+	SetScrollPos((HWND)lParam, SB_CTL, _scrollPos, TRUE);
+	SetDlgItemText(hwnd, static_cast<int>(_COM::ANISO_VALUE), _int2wchar(_scrollPos));
+
+	_dxapp->resetSimulationState();
 }
 
 void Kobayashi::iWMTimer(HWND hwnd)

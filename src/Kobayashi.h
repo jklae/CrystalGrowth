@@ -44,7 +44,8 @@ private :
 	enum class _COM
 	{
 		PLAY, STOP, NEXTSTEP,
-		TIME_TEXT, FRAME_TEXT
+		TIME_TEXT, FRAME_TEXT,
+		ANISO_VALUE, ANISO_BAR
 	};
 
 	clock_t _simTime = 0;
@@ -60,6 +61,8 @@ private :
 
 	wchar_t wBuffer[5];
 	wchar_t* _int2wchar(int value);
+
+	int _scrollPos = 6;
 
 	//
 	inline int _INDEX(int i, int j) { return (i + _objectCount.x * j); };

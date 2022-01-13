@@ -21,15 +21,15 @@ Kobayashi::~Kobayashi()
 void Kobayashi::_initialize()
 {
 	//
-	_tau = 0.0003f;
-	_epsilonBar = 0.01f;	// Mean of epsilon. scaling factor that determines how much the microscopic front is magnified
-	_mu = 1.0f;
-	_K = 1.6f;				// Latent heat 
-	_delta = 0.05f;			// Strength of anisotropy (speed of growth in preferred directions)
-	_anisotropy = 6.0f;		// Degree of anisotropy
-	_alpha = 0.9f;
-	_gamma = 10.0f;
-	_tEq = 1.0f;
+	_tau = _tauValue;
+	_epsilonBar = _epsilonBarValue;		// Mean of epsilon. scaling factor that determines how much the microscopic front is magnified
+	_mu = _muValue;
+	_K = _KValue;						// Latent heat 
+	_delta = _deltaValue;				// Strength of anisotropy (speed of growth in preferred directions)
+	_anisotropy = _anisotropyValue;		// Degree of anisotropy
+	_alpha = _alphaValue;
+	_gamma = _gammaValue;
+	_tEq = _tEqValue;
 	//
 
 	size_t vSize = static_cast<size_t>(_objectCount.x) * static_cast<size_t>(_objectCount.y);

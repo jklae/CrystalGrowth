@@ -67,18 +67,19 @@ private :
 	//
 	inline int _INDEX(int i, int j) { return (i + _objectCount.x * j); };
 
-	float _dx;
-	float _dy;
-	float _dt;
-	float _tau;
-	float _epsilonBar;
-	float _mu;
-	float _K;
-	float _delta;
-	float _anisotropy;
-	float _alpha;
-	float _gamma;
-	float _tEq;
+	float _tauValue = 0.0003f;
+	float _epsilonBarValue = 0.01f;
+	float _muValue = 1.0f;
+	float _KValue = 1.6f;
+	float _deltaValue = 0.05f;
+	float _anisotropyValue = 6.0f;
+	float _alphaValue = 0.9f;
+	float _gammaValue = 10.0f;
+	float _tEqValue = 1.0f;
+
+	float _dx, _dy, _dt,
+		_tau, _epsilonBar, _mu, _K, _delta, 
+		_anisotropy, _alpha, _gamma, _tEq;
 
 	std::vector<float> _phi;
 	std::vector<float> _t;

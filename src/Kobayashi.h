@@ -59,8 +59,6 @@ private :
 
 	float _updateFlag = true;
 
-	int _scrollPos = 6;
-
 	//
 	inline int _INDEX(int i, int j) { return (i + _objectCount.x * j); };
 

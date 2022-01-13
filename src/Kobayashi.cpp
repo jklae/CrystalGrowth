@@ -155,12 +155,6 @@ void Kobayashi::_evolution()
 	}
 }
 
-wchar_t* Kobayashi::_int2wchar(int value)
-{
-	_itow(value, wBuffer, 10);
-	return wBuffer;
-}
-
 
 #pragma region implementation
 // ################################## implementation ####################################
@@ -311,11 +305,11 @@ void Kobayashi::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 
 	CreateWindow(L"static", L"time :", WS_CHILD | WS_VISIBLE,
 		95, 340, 40, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
-	CreateWindow(L"static", _int2wchar(_simTime), WS_CHILD | WS_VISIBLE,
+	CreateWindow(L"static", DXViewer::util::int2wstring(_simTime).c_str(), WS_CHILD | WS_VISIBLE,
 		140, 340, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::TIME_TEXT), hInstance, NULL);
 	CreateWindow(L"static", L"frame :", WS_CHILD | WS_VISIBLE,
 		86, 360, 45, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
-	CreateWindow(L"static", _int2wchar(_simFrame), WS_CHILD | WS_VISIBLE,
+	CreateWindow(L"static", DXViewer::util::int2wstring(_simFrame).c_str(), WS_CHILD | WS_VISIBLE,
 		140, 360, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::FRAME_TEXT), hInstance, NULL);
 
 
@@ -403,15 +397,15 @@ void Kobayashi::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hI
 	}
 
 	SetScrollPos((HWND)lParam, SB_CTL, _scrollPos, TRUE);
-	SetDlgItemText(hwnd, static_cast<int>(_COM::ANISO_VALUE), _int2wchar(_scrollPos));
+	SetDlgItemText(hwnd, static_cast<int>(_COM::ANISO_VALUE), DXViewer::util::int2wstring(_scrollPos).c_str());
 
 	_dxapp->resetSimulationState();
 }
 
 void Kobayashi::iWMTimer(HWND hwnd)
 {
-	SetDlgItemText(hwnd, static_cast<int>(_COM::TIME_TEXT), _int2wchar(_simTime));
-	SetDlgItemText(hwnd, static_cast<int>(_COM::FRAME_TEXT), _int2wchar(_simFrame));
+	SetDlgItemText(hwnd, static_cast<int>(_COM::TIME_TEXT), DXViewer::util::int2wstring(_simTime).c_str());
+	SetDlgItemText(hwnd, static_cast<int>(_COM::FRAME_TEXT), DXViewer::util::int2wstring(_simFrame).c_str());
 }
 
 void Kobayashi::iWMDestory(HWND hwnd)

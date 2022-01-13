@@ -59,9 +59,6 @@ private :
 
 	float _updateFlag = true;
 
-	wchar_t wBuffer[5];
-	wchar_t* _int2wchar(int value);
-
 	int _scrollPos = 6;
 
 	//

@@ -41,7 +41,7 @@ public:
 #pragma endregion
 
 private :
-	enum class _COM
+	enum class COM
 	{
 		PLAY, STOP, NEXTSTEP,
 		TIME_TEXT, FRAME_TEXT,
@@ -62,6 +62,15 @@ private :
 
 	//
 	inline int _INDEX(int i, int j) { return (i + _objectCount.x * j); };
+
+	struct CrystalParameter
+	{
+		HWND scrollbar;
+		std::reference_wrapper<float> ref;
+		int max;
+		int min;
+		int stride;
+	};
 
 	std::vector<std::reference_wrapper<float>> _crystalVariable;
 	float _dx;

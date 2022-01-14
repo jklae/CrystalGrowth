@@ -22,9 +22,7 @@ Kobayashi::Kobayashi(int x, int y, float timeStep)
 	_gamma = 10.0f;
 	_tEq = 1.0f;
 	//
-
-	_crystalVariable.push_back(std::ref(_delta));
-	_crystalVariable.push_back(std::ref(_anisotropy));
+	_crystalParameter.push_back(CrystalParameter(_anisotropy, 2, 8, 1));
 
 	_initialize();
 }
@@ -328,8 +326,9 @@ void Kobayashi::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 		20, 250, 80, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
 	CreateWindow(L"static", to_wstring(_anisotropy).c_str(), WS_CHILD | WS_VISIBLE,
 		105, 251, 20, 20, hwnd, reinterpret_cast<HMENU>(COM::ANISO_VALUE), hInstance, NULL);
-	_scrollbar.push_back(CreateWindow(L"scrollbar", NULL, WS_CHILD | WS_VISIBLE | SBS_HORZ,
-			167, 250, 100, 20, hwnd, reinterpret_cast<HMENU>(COM::ANISO_BAR), hInstance, NULL));
+	_crystalParameter[0].scrollbar = 
+		CreateWindow(L"scrollbar", NULL, WS_CHILD | WS_VISIBLE | SBS_HORZ,
+			167, 250, 100, 20, hwnd, reinterpret_cast<HMENU>(COM::ANISO_BAR), hInstance, NULL);
 
 	if (_updateFlag)
 	{
@@ -337,8 +336,8 @@ void Kobayashi::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 	}
 
 
-	SetScrollRange(_scrollbar[0], SB_CTL, 2, 8, TRUE);
-	SetScrollPos(_scrollbar[0], SB_CTL, _anisotropy, TRUE);
+	SetScrollRange(_crystalParameter[0].scrollbar, SB_CTL, 2, 8, TRUE);
+	SetScrollPos(_crystalParameter[0].scrollbar, SB_CTL, _anisotropy, TRUE);
 
 	SetTimer(hwnd, 1, 10, NULL);
 }
@@ -375,9 +374,9 @@ void Kobayashi::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HI
 
 void Kobayashi::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance)
 {
-	if ((HWND)lParam == _scrollbar[0])
+	if ((HWND)lParam == _crystalParameter[0].scrollbar)
 	{
-		float& varRef = _crystalVariable[1];
+		float& varRef = _crystalParameter[0].value;
 		int scrollPos = static_cast<int>(varRef);
 
 		switch (LOWORD(wParam))

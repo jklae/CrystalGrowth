@@ -58,21 +58,26 @@ private :
 	DX12App* _dxapp = nullptr;
 	float _updateFlag = true;
 
-	std::vector<HWND> _scrollbar;
-
 	//
 	inline int _INDEX(int i, int j) { return (i + _objectCount.x * j); };
 
-	struct CrystalParameter
+	enum class TYPE
 	{
-		HWND scrollbar;
-		std::reference_wrapper<float> ref;
-		int max;
-		int min;
-		int stride;
+		DELTA, ANISOTROPY
 	};
 
-	std::vector<std::reference_wrapper<float>> _crystalVariable;
+	struct CrystalParameter
+	{
+		CrystalParameter(float& valu, int minVa, int maxVa, float strid)
+		: value(valu), minVal(minVa), maxVal(maxVa), stride(strid) {}
+		float& value;
+		int minVal;
+		int maxVal;
+		float stride;
+		HWND scrollbar = nullptr;
+	};
+
+	std::vector<CrystalParameter> _crystalParameter;
 	float _dx;
 	float _dy;
 	float _dt;

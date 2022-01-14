@@ -300,20 +300,20 @@ bool Kobayashi::iIsUpdated()
 void Kobayashi::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 {
 	CreateWindow(L"button", _updateFlag ? L"¡«" : L"¢º", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-		65, 290, 50, 25, hwnd, reinterpret_cast<HMENU>(_COM::PLAY), hInstance, NULL);
+		65, 290, 50, 25, hwnd, reinterpret_cast<HMENU>(COM::PLAY), hInstance, NULL);
 	CreateWindow(L"button", L"¡á", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-		115, 290, 50, 25, hwnd, reinterpret_cast<HMENU>(_COM::STOP), hInstance, NULL);
+		115, 290, 50, 25, hwnd, reinterpret_cast<HMENU>(COM::STOP), hInstance, NULL);
 	CreateWindow(L"button", L"¢ºl", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-		165, 290, 50, 25, hwnd, reinterpret_cast<HMENU>(_COM::NEXTSTEP), hInstance, NULL);
+		165, 290, 50, 25, hwnd, reinterpret_cast<HMENU>(COM::NEXTSTEP), hInstance, NULL);
 
 	CreateWindow(L"static", L"time :", WS_CHILD | WS_VISIBLE,
 		95, 340, 40, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
 	CreateWindow(L"static", to_wstring(_simTime).c_str(), WS_CHILD | WS_VISIBLE,
-		140, 340, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::TIME_TEXT), hInstance, NULL);
+		140, 340, 40, 20, hwnd, reinterpret_cast<HMENU>(COM::TIME_TEXT), hInstance, NULL);
 	CreateWindow(L"static", L"frame :", WS_CHILD | WS_VISIBLE,
 		86, 360, 45, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
 	CreateWindow(L"static", to_wstring(_simFrame).c_str(), WS_CHILD | WS_VISIBLE,
-		140, 360, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::FRAME_TEXT), hInstance, NULL);
+		140, 360, 40, 20, hwnd, reinterpret_cast<HMENU>(COM::FRAME_TEXT), hInstance, NULL);
 
 
 	CreateWindow(L"static", L"delta :", WS_CHILD | WS_VISIBLE,
@@ -322,18 +322,18 @@ void Kobayashi::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 		105, 221, 28, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
 	HWND deltaScroll =
 		CreateWindow(L"scrollbar", NULL, WS_CHILD | WS_VISIBLE | SBS_HORZ,
-			167, 220, 100, 20, hwnd, reinterpret_cast<HMENU>(_COM::ANISO_BAR), hInstance, NULL);
+			167, 220, 100, 20, hwnd, reinterpret_cast<HMENU>(COM::ANISO_BAR), hInstance, NULL);
 
 	CreateWindow(L"static", L"anisotropy :", WS_CHILD | WS_VISIBLE,
 		20, 250, 80, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
 	CreateWindow(L"static", to_wstring(_anisotropy).c_str(), WS_CHILD | WS_VISIBLE,
-		105, 251, 20, 20, hwnd, reinterpret_cast<HMENU>(_COM::ANISO_VALUE), hInstance, NULL);
+		105, 251, 20, 20, hwnd, reinterpret_cast<HMENU>(COM::ANISO_VALUE), hInstance, NULL);
 	_scrollbar.push_back(CreateWindow(L"scrollbar", NULL, WS_CHILD | WS_VISIBLE | SBS_HORZ,
-			167, 250, 100, 20, hwnd, reinterpret_cast<HMENU>(_COM::ANISO_BAR), hInstance, NULL));
+			167, 250, 100, 20, hwnd, reinterpret_cast<HMENU>(COM::ANISO_BAR), hInstance, NULL));
 
 	if (_updateFlag)
 	{
-		EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::NEXTSTEP)), false);
+		EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::NEXTSTEP)), false);
 	}
 
 
@@ -348,21 +348,21 @@ void Kobayashi::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HI
 	switch (LOWORD(wParam))
 	{
 		// ### Execution buttons ###
-		case static_cast<int>(_COM::PLAY):
+		case static_cast<int>(COM::PLAY):
 		{
 			_updateFlag = !_updateFlag;
-			SetDlgItemText(hwnd, static_cast<int>(_COM::PLAY), _updateFlag ? L"¡«" : L"¢º");
+			SetDlgItemText(hwnd, static_cast<int>(COM::PLAY), _updateFlag ? L"¡«" : L"¢º");
 
-			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::STOP)), true);
-			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::NEXTSTEP)), !_updateFlag);
+			EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::STOP)), true);
+			EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::NEXTSTEP)), !_updateFlag);
 		}
 		break;
-		case static_cast<int>(_COM::STOP):
+		case static_cast<int>(COM::STOP):
 		{
 			_dxapp->resetSimulationState();
 		}
 		break;
-		case static_cast<int>(_COM::NEXTSTEP):
+		case static_cast<int>(COM::NEXTSTEP):
 		{
 			iUpdate();
 			_dxapp->update();
@@ -406,7 +406,7 @@ void Kobayashi::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hI
 		SetScrollPos((HWND)lParam, SB_CTL, scrollPos, TRUE);
 
 		varRef = static_cast<float>(scrollPos);
-		SetDlgItemText(hwnd, static_cast<int>(_COM::ANISO_VALUE), to_wstring(varRef).c_str());
+		SetDlgItemText(hwnd, static_cast<int>(COM::ANISO_VALUE), to_wstring(varRef).c_str());
 
 		_dxapp->resetSimulationState();
 	}
@@ -414,8 +414,8 @@ void Kobayashi::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hI
 
 void Kobayashi::iWMTimer(HWND hwnd)
 {
-	SetDlgItemText(hwnd, static_cast<int>(_COM::TIME_TEXT), to_wstring(_simTime).c_str());
-	SetDlgItemText(hwnd, static_cast<int>(_COM::FRAME_TEXT), to_wstring(_simFrame).c_str());
+	SetDlgItemText(hwnd, static_cast<int>(COM::TIME_TEXT), to_wstring(_simTime).c_str());
+	SetDlgItemText(hwnd, static_cast<int>(COM::FRAME_TEXT), to_wstring(_simFrame).c_str());
 }
 
 void Kobayashi::iWMDestory(HWND hwnd)

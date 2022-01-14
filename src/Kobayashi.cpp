@@ -23,6 +23,8 @@ Kobayashi::Kobayashi(int x, int y, float timeStep)
 	_tEq = 1.0f;
 	//
 
+	_crystalVariable.push_back(std::ref(_anisotropy));
+
 	_initialize();
 }
 
@@ -373,7 +375,8 @@ void Kobayashi::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HI
 
 void Kobayashi::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance)
 {
-	int scrollPos = static_cast<int>(_anisotropy);
+	float& varRef = _crystalVariable[0];
+	int scrollPos = static_cast<int>(varRef);
 
 	switch (LOWORD(wParam))
 	{
@@ -390,18 +393,18 @@ void Kobayashi::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hI
 		break;
 
 	case SB_PAGELEFT:
-		scrollPos = max(2, scrollPos - 5);
+		scrollPos = max(2, scrollPos - 2);
 		break;
 
 	case SB_PAGERIGHT:
-		scrollPos = min(8, scrollPos + 5);
+		scrollPos = min(8, scrollPos + 2);
 		break;
 	}
 	
 	SetScrollPos((HWND)lParam, SB_CTL, scrollPos, TRUE);
 
-	_anisotropy = static_cast<float>(scrollPos);
-	SetDlgItemText(hwnd, static_cast<int>(_COM::ANISO_VALUE), to_wstring(_anisotropy).c_str());
+	varRef = static_cast<float>(scrollPos);
+	SetDlgItemText(hwnd, static_cast<int>(_COM::ANISO_VALUE), to_wstring(varRef).c_str());
 
 	_dxapp->resetSimulationState();
 }

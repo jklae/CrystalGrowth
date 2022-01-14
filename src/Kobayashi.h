@@ -62,6 +62,8 @@ private :
 	//
 	inline int _INDEX(int i, int j) { return (i + _objectCount.x * j); };
 
+	std::vector<std::reference_wrapper<float>> _crystalVariable;
+
 	float _dx;
 	float _dy;
 	float _dt;

@@ -23,8 +23,15 @@ Kobayashi::Kobayashi(int x, int y, float timeStep)
 	_tEq = 1.0f;
 	//
 
+	_crystalParameter.push_back(CrystalParameter(_tau, 1, 9, 0.0001f));
+	_crystalParameter.push_back(CrystalParameter(_epsilonBar, 6, 15, 0.001f));
+	_crystalParameter.push_back(CrystalParameter(_mu, 5, 14, 0.1f));
+	_crystalParameter.push_back(CrystalParameter(_K, 10, 19, 0.1f));
 	_crystalParameter.push_back(CrystalParameter(_delta, 1, 9, 0.01f));
 	_crystalParameter.push_back(CrystalParameter(_anisotropy, 2, 8, 1.0f));
+	_crystalParameter.push_back(CrystalParameter(_alpha, 1, 9, 0.1f));
+	_crystalParameter.push_back(CrystalParameter(_gamma, 10, 20, 1.0f));
+	_crystalParameter.push_back(CrystalParameter(_tEq, 5, 15, 0.1f));
 
 	_initialize();
 }
@@ -315,31 +322,96 @@ void Kobayashi::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 	CreateWindow(L"static", to_wstring(_simFrame).c_str(), WS_CHILD | WS_VISIBLE,
 		140, 360, 40, 20, hwnd, reinterpret_cast<HMENU>(COM::FRAME_TEXT), hInstance, NULL);
 
+	
 
-	// Delta
+	// tau
+	CreateWindow(L"static", L"tau :", WS_CHILD | WS_VISIBLE,
+		69, 40, 80, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+	CreateWindow(L"static", to_wstring(_tau).c_str(), WS_CHILD | WS_VISIBLE,
+		105, 40, 44, 20, hwnd, reinterpret_cast<HMENU>(COM::TAU), hInstance, NULL);
+	_crystalParameter[static_cast<int>(COM::TAU)].scrollbar = 
+		CreateWindow(L"scrollbar", NULL, WS_CHILD | WS_VISIBLE | SBS_HORZ,
+			167, 40, 100, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+
+	// epsilonBar
+	CreateWindow(L"static", L"epsilonBar :", WS_CHILD | WS_VISIBLE,
+		18, 60, 80, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+	CreateWindow(L"static", to_wstring(_epsilonBar).c_str(), WS_CHILD | WS_VISIBLE,
+		105, 60, 35, 20, hwnd, reinterpret_cast<HMENU>(COM::EPLSILONBAR), hInstance, NULL);
+	_crystalParameter[static_cast<int>(COM::EPLSILONBAR)].scrollbar =
+		CreateWindow(L"scrollbar", NULL, WS_CHILD | WS_VISIBLE | SBS_HORZ,
+			167, 60, 100, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+
+	// mu
+	CreateWindow(L"static", L"mu :", WS_CHILD | WS_VISIBLE,
+		69, 80, 80, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+	CreateWindow(L"static", to_wstring(_mu).c_str(), WS_CHILD | WS_VISIBLE,
+		105, 80, 20, 20, hwnd, reinterpret_cast<HMENU>(COM::MU), hInstance, NULL);
+	_crystalParameter[static_cast<int>(COM::MU)].scrollbar =
+		CreateWindow(L"scrollbar", NULL, WS_CHILD | WS_VISIBLE | SBS_HORZ,
+			167, 80, 100, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+
+	// K
+	CreateWindow(L"static", L"K :", WS_CHILD | WS_VISIBLE,
+		80, 100, 80, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+	CreateWindow(L"static", to_wstring(_K).c_str(), WS_CHILD | WS_VISIBLE,
+		105, 100, 20, 20, hwnd, reinterpret_cast<HMENU>(COM::K), hInstance, NULL);
+	_crystalParameter[static_cast<int>(COM::K)].scrollbar =
+		CreateWindow(L"scrollbar", NULL, WS_CHILD | WS_VISIBLE | SBS_HORZ,
+			167, 100, 100, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+
+	// delta
 	CreateWindow(L"static", L"delta :", WS_CHILD | WS_VISIBLE,
-		57, 220, 40, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+		57, 120, 40, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
 	CreateWindow(L"static", to_wstring(_delta).c_str(), WS_CHILD | WS_VISIBLE,
-		105, 221, 28, 20, hwnd, reinterpret_cast<HMENU>(COM::DELTA_VALUE), hInstance, NULL);
-	_crystalParameter[static_cast<int>(TYPE::DELTA)].scrollbar =
+		105, 121, 28, 20, hwnd, reinterpret_cast<HMENU>(COM::DELTA), hInstance, NULL);
+	_crystalParameter[static_cast<int>(COM::DELTA)].scrollbar =
 		CreateWindow(L"scrollbar", NULL, WS_CHILD | WS_VISIBLE | SBS_HORZ,
-			167, 220, 100, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+			167, 120, 100, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
 
-	// Anisotropy
+	// anisotropy
 	CreateWindow(L"static", L"anisotropy :", WS_CHILD | WS_VISIBLE,
-		20, 250, 80, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+		20, 140, 80, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
 	CreateWindow(L"static", to_wstring(_anisotropy).c_str(), WS_CHILD | WS_VISIBLE,
-		105, 251, 20, 20, hwnd, reinterpret_cast<HMENU>(COM::ANISO_VALUE), hInstance, NULL);
-	_crystalParameter[static_cast<int>(TYPE::ANISOTROPY)].scrollbar = 
+		105, 141, 20, 20, hwnd, reinterpret_cast<HMENU>(COM::ANISOTROPY), hInstance, NULL);
+	_crystalParameter[static_cast<int>(COM::ANISOTROPY)].scrollbar = 
 		CreateWindow(L"scrollbar", NULL, WS_CHILD | WS_VISIBLE | SBS_HORZ,
-			167, 250, 100, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+			167, 140, 100, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+
+	// alpha
+	CreateWindow(L"static", L"alpha :", WS_CHILD | WS_VISIBLE,
+		53, 160, 80, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+	CreateWindow(L"static", to_wstring(_alpha).c_str(), WS_CHILD | WS_VISIBLE,
+		105, 161, 20, 20, hwnd, reinterpret_cast<HMENU>(COM::ALPHA), hInstance, NULL);
+	_crystalParameter[static_cast<int>(COM::ALPHA)].scrollbar =
+		CreateWindow(L"scrollbar", NULL, WS_CHILD | WS_VISIBLE | SBS_HORZ,
+			167, 160, 100, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+
+	// gamma
+	CreateWindow(L"static", L"gamma :", WS_CHILD | WS_VISIBLE,
+		41, 180, 80, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+	CreateWindow(L"static", to_wstring(_gamma).c_str(), WS_CHILD | WS_VISIBLE,
+		105, 181, 28, 20, hwnd, reinterpret_cast<HMENU>(COM::GAMMA), hInstance, NULL);
+	_crystalParameter[static_cast<int>(COM::GAMMA)].scrollbar =
+		CreateWindow(L"scrollbar", NULL, WS_CHILD | WS_VISIBLE | SBS_HORZ,
+			167, 180, 100, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+
+	// tEq
+	CreateWindow(L"static", L"tEq :", WS_CHILD | WS_VISIBLE,
+		68, 200, 80, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+	CreateWindow(L"static", to_wstring(_tEq).c_str(), WS_CHILD | WS_VISIBLE,
+		105, 201, 20, 20, hwnd, reinterpret_cast<HMENU>(COM::TEQ), hInstance, NULL);
+	_crystalParameter[static_cast<int>(COM::TEQ)].scrollbar =
+		CreateWindow(L"scrollbar", NULL, WS_CHILD | WS_VISIBLE | SBS_HORZ,
+			167, 200, 100, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+
 
 	if (_updateFlag)
 	{
 		EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::NEXTSTEP)), false);
 	}
 	
-	for (int i = 0; i <= static_cast<int>(TYPE::ANISOTROPY); i++)
+	for (int i = 0; i <= static_cast<int>(COM::TEQ); i++)
 	{
 		float& value = _crystalParameter[i].value;
 		int minValue = _crystalParameter[i].minVal;
@@ -389,10 +461,24 @@ void Kobayashi::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hI
 	HWND iparam = reinterpret_cast<HWND>(lParam);
 
 	int index = 0;
-	if (iparam == _crystalParameter[static_cast<int>(TYPE::ANISOTROPY)].scrollbar)
-		index = static_cast<int>(TYPE::ANISOTROPY);
+	if (iparam == _crystalParameter[static_cast<int>(COM::TAU)].scrollbar)
+		index = static_cast<int>(COM::TAU);
+	else if (iparam == _crystalParameter[static_cast<int>(COM::EPLSILONBAR)].scrollbar)
+		index = static_cast<int>(COM::EPLSILONBAR);
+	else if (iparam == _crystalParameter[static_cast<int>(COM::MU)].scrollbar)
+		index = static_cast<int>(COM::MU);
+	else if (iparam == _crystalParameter[static_cast<int>(COM::K)].scrollbar)
+		index = static_cast<int>(COM::K);
+	else if (iparam == _crystalParameter[static_cast<int>(COM::DELTA)].scrollbar)
+		index = static_cast<int>(COM::DELTA);
+	else if (iparam == _crystalParameter[static_cast<int>(COM::ANISOTROPY)].scrollbar)
+		index = static_cast<int>(COM::ANISOTROPY);
+	else if (iparam == _crystalParameter[static_cast<int>(COM::ALPHA)].scrollbar)
+		index = static_cast<int>(COM::ALPHA);
+	else if (iparam == _crystalParameter[static_cast<int>(COM::GAMMA)].scrollbar)
+		index = static_cast<int>(COM::GAMMA);
 	else
-		index = static_cast<int>(TYPE::DELTA);
+		index = static_cast<int>(COM::TEQ);
 
 	float& value = _crystalParameter[index].value;
 	int minValue = _crystalParameter[index].minVal;

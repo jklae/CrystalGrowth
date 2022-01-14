@@ -43,7 +43,9 @@ public:
 private :
 	enum class COM
 	{
-		DELTA_VALUE, ANISO_VALUE,
+		TAU, EPLSILONBAR, MU,
+		K, DELTA, ANISOTROPY,
+		ALPHA, GAMMA, TEQ,
 		PLAY, STOP, NEXTSTEP,
 		TIME_TEXT, FRAME_TEXT,
 	};
@@ -60,11 +62,6 @@ private :
 
 	//
 	inline int _INDEX(int i, int j) { return (i + _objectCount.x * j); };
-
-	enum class TYPE
-	{
-		DELTA, ANISOTROPY
-	};
 
 	struct CrystalParameter
 	{

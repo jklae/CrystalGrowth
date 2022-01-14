@@ -46,7 +46,7 @@ private :
 		TAU, EPLSILONBAR, MU,
 		K, DELTA, ANISOTROPY,
 		ALPHA, GAMMA, TEQ,
-		PLAY, STOP, NEXTSTEP,
+		RESET, PLAY, STOP, NEXTSTEP,
 		TIME_TEXT, FRAME_TEXT,
 	};
 
@@ -98,7 +98,8 @@ private :
 	std::vector<float> _lapT;
 	std::vector<float> _angl;
 	
-	void _initialize();
+	void _parameterInit();
+	void _vectorInit();
 	void _createNucleus(int x, int y);
 	void _computeGradientLaplacian();
 	void _evolution();

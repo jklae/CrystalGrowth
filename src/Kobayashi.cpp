@@ -11,17 +11,7 @@ Kobayashi::Kobayashi(int x, int y, float timeStep)
 	_dy = 0.03f;
 	_dt = timeStep;
 
-	//
-	_tau = 0.0003f;
-	_epsilonBar = 0.01f;		// Mean of epsilon. scaling factor that determines how much the microscopic front is magnified
-	_mu = 1.0f;
-	_K = 1.6f;						// Latent heat 
-	_delta = 0.05f;				// Strength of anisotropy (speed of growth in preferred directions)
-	_anisotropy = 6.0f;		// Degree of anisotropy
-	_alpha = 0.9f;
-	_gamma = 10.0f;
-	_tEq = 1.0f;
-	//
+	_parameterInit();
 
 	_crystalParameter.push_back(CrystalParameter(_tau, 1, 9, 0.0001f));
 	_crystalParameter.push_back(CrystalParameter(_epsilonBar, 6, 15, 0.001f));
@@ -33,14 +23,29 @@ Kobayashi::Kobayashi(int x, int y, float timeStep)
 	_crystalParameter.push_back(CrystalParameter(_gamma, 10, 20, 1.0f));
 	_crystalParameter.push_back(CrystalParameter(_tEq, 5, 15, 0.1f));
 
-	_initialize();
+	_vectorInit();
 }
 
 Kobayashi::~Kobayashi()
 {
 }
 
-void Kobayashi::_initialize()
+void Kobayashi::_parameterInit()
+{
+	//
+	_tau = 0.0003f;
+	_epsilonBar = 0.01f;		// Mean of epsilon. scaling factor that determines how much the microscopic front is magnified
+	_mu = 1.0f;
+	_K = 1.6f;					// Latent heat 
+	_delta = 0.05f;				// Strength of anisotropy (speed of growth in preferred directions)
+	_anisotropy = 6.0f;			// Degree of anisotropy
+	_alpha = 0.9f;
+	_gamma = 10.0f;
+	_tEq = 1.0f;
+	//
+}
+
+void Kobayashi::_vectorInit()
 {
 	size_t vSize = static_cast<size_t>(_objectCount.x) * static_cast<size_t>(_objectCount.y);
 	_phi.assign(vSize, 0.0f);
@@ -185,7 +190,7 @@ void Kobayashi::iUpdate()
 
 void Kobayashi::iResetSimulationState(std::vector<ConstantBuffer>& constantBuffer)
 {
-	_initialize();
+	_vectorInit();
 
 	_dxapp->update();
 	_dxapp->draw();
@@ -306,12 +311,15 @@ bool Kobayashi::iIsUpdated()
 
 void Kobayashi::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 {
+	CreateWindow(L"button", L"Reset", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+		93, 237, 95, 32, hwnd, reinterpret_cast<HMENU>(COM::RESET), hInstance, NULL);
+
 	CreateWindow(L"button", _updateFlag ? L"¡«" : L"¢º", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-		65, 290, 50, 25, hwnd, reinterpret_cast<HMENU>(COM::PLAY), hInstance, NULL);
+		65, 300, 50, 25, hwnd, reinterpret_cast<HMENU>(COM::PLAY), hInstance, NULL);
 	CreateWindow(L"button", L"¡á", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-		115, 290, 50, 25, hwnd, reinterpret_cast<HMENU>(COM::STOP), hInstance, NULL);
+		115, 300, 50, 25, hwnd, reinterpret_cast<HMENU>(COM::STOP), hInstance, NULL);
 	CreateWindow(L"button", L"¢ºl", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-		165, 290, 50, 25, hwnd, reinterpret_cast<HMENU>(COM::NEXTSTEP), hInstance, NULL);
+		165, 300, 50, 25, hwnd, reinterpret_cast<HMENU>(COM::NEXTSTEP), hInstance, NULL);
 
 	CreateWindow(L"static", L"time :", WS_CHILD | WS_VISIBLE,
 		95, 340, 40, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
@@ -431,6 +439,24 @@ void Kobayashi::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HI
 	switch (LOWORD(wParam))
 	{
 		// ### Execution buttons ###
+		case static_cast<int>(COM::RESET):
+		{
+			_parameterInit();
+
+			for (int i = 0; i <= static_cast<int>(COM::TEQ); i++)
+			{
+				float& value = _crystalParameter[i].value;
+				float stride = _crystalParameter[i].stride;
+				HWND scrollbar = _crystalParameter[i].scrollbar;
+
+				int scrollPos = static_cast<int>(value / stride);
+				SetScrollPos(scrollbar, SB_CTL, scrollPos, TRUE);
+				SetDlgItemText(hwnd, i, to_wstring(value).c_str());
+			}
+
+			_dxapp->resetSimulationState();
+		}
+		break;
 		case static_cast<int>(COM::PLAY):
 		{
 			_updateFlag = !_updateFlag;

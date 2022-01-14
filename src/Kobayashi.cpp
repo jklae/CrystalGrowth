@@ -22,7 +22,9 @@ Kobayashi::Kobayashi(int x, int y, float timeStep)
 	_gamma = 10.0f;
 	_tEq = 1.0f;
 	//
-	_crystalParameter.push_back(CrystalParameter(_anisotropy, 2, 8, 1));
+
+	_crystalParameter.push_back(CrystalParameter(_delta, 1, 9, 0.01f));
+	_crystalParameter.push_back(CrystalParameter(_anisotropy, 2, 8, 1.0f));
 
 	_initialize();
 }
@@ -314,30 +316,40 @@ void Kobayashi::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 		140, 360, 40, 20, hwnd, reinterpret_cast<HMENU>(COM::FRAME_TEXT), hInstance, NULL);
 
 
+	// Delta
 	CreateWindow(L"static", L"delta :", WS_CHILD | WS_VISIBLE,
 		57, 220, 40, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
 	CreateWindow(L"static", to_wstring(_delta).c_str(), WS_CHILD | WS_VISIBLE,
-		105, 221, 28, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
-	HWND deltaScroll =
+		105, 221, 28, 20, hwnd, reinterpret_cast<HMENU>(COM::DELTA_VALUE), hInstance, NULL);
+	_crystalParameter[static_cast<int>(TYPE::DELTA)].scrollbar =
 		CreateWindow(L"scrollbar", NULL, WS_CHILD | WS_VISIBLE | SBS_HORZ,
-			167, 220, 100, 20, hwnd, reinterpret_cast<HMENU>(COM::ANISO_BAR), hInstance, NULL);
+			167, 220, 100, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
 
+	// Anisotropy
 	CreateWindow(L"static", L"anisotropy :", WS_CHILD | WS_VISIBLE,
 		20, 250, 80, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
 	CreateWindow(L"static", to_wstring(_anisotropy).c_str(), WS_CHILD | WS_VISIBLE,
 		105, 251, 20, 20, hwnd, reinterpret_cast<HMENU>(COM::ANISO_VALUE), hInstance, NULL);
-	_crystalParameter[0].scrollbar = 
+	_crystalParameter[static_cast<int>(TYPE::ANISOTROPY)].scrollbar = 
 		CreateWindow(L"scrollbar", NULL, WS_CHILD | WS_VISIBLE | SBS_HORZ,
-			167, 250, 100, 20, hwnd, reinterpret_cast<HMENU>(COM::ANISO_BAR), hInstance, NULL);
+			167, 250, 100, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
 
 	if (_updateFlag)
 	{
 		EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::NEXTSTEP)), false);
 	}
+	
+	for (int i = 0; i <= static_cast<int>(TYPE::ANISOTROPY); i++)
+	{
+		float& value = _crystalParameter[i].value;
+		int minValue = _crystalParameter[i].minVal;
+		int maxValue = _crystalParameter[i].maxVal;
+		float stride = _crystalParameter[i].stride;
+		HWND scrollbar = _crystalParameter[i].scrollbar;
 
-
-	SetScrollRange(_crystalParameter[0].scrollbar, SB_CTL, 2, 8, TRUE);
-	SetScrollPos(_crystalParameter[0].scrollbar, SB_CTL, _anisotropy, TRUE);
+		SetScrollRange(scrollbar, SB_CTL, minValue, maxValue, TRUE);
+		SetScrollPos(scrollbar, SB_CTL, static_cast<int>(value / stride), TRUE);
+	}
 
 	SetTimer(hwnd, 1, 10, NULL);
 }
@@ -374,41 +386,51 @@ void Kobayashi::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HI
 
 void Kobayashi::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance)
 {
-	if ((HWND)lParam == _crystalParameter[0].scrollbar)
+	HWND iparam = reinterpret_cast<HWND>(lParam);
+
+	int index = 0;
+	if (iparam == _crystalParameter[static_cast<int>(TYPE::ANISOTROPY)].scrollbar)
+		index = static_cast<int>(TYPE::ANISOTROPY);
+	else
+		index = static_cast<int>(TYPE::DELTA);
+
+	float& value = _crystalParameter[index].value;
+	int minValue = _crystalParameter[index].minVal;
+	int maxValue = _crystalParameter[index].maxVal;
+	float stride = _crystalParameter[index].stride;
+
+	int scrollPos = static_cast<int>(value / stride);
+
+	switch (LOWORD(wParam))
 	{
-		float& varRef = _crystalParameter[0].value;
-		int scrollPos = static_cast<int>(varRef);
+	case SB_THUMBTRACK:
+		scrollPos = HIWORD(wParam);
+		break;
 
-		switch (LOWORD(wParam))
-		{
-		case SB_THUMBTRACK:
-			scrollPos = HIWORD(wParam);
-			break;
+	case SB_LINELEFT:
+		scrollPos = max(minValue, scrollPos - 1);
+		break;
 
-		case SB_LINELEFT:
-			scrollPos = max(2, scrollPos - 1);
-			break;
+	case SB_LINERIGHT:
+		scrollPos = min(maxValue, scrollPos + 1);
+		break;
 
-		case SB_LINERIGHT:
-			scrollPos = min(8, scrollPos + 1);
-			break;
+	case SB_PAGELEFT:
+		scrollPos = max(minValue, scrollPos - 2);
+		break;
 
-		case SB_PAGELEFT:
-			scrollPos = max(2, scrollPos - 2);
-			break;
-
-		case SB_PAGERIGHT:
-			scrollPos = min(8, scrollPos + 2);
-			break;
-		}
-
-		SetScrollPos((HWND)lParam, SB_CTL, scrollPos, TRUE);
-
-		varRef = static_cast<float>(scrollPos);
-		SetDlgItemText(hwnd, static_cast<int>(COM::ANISO_VALUE), to_wstring(varRef).c_str());
-
-		_dxapp->resetSimulationState();
+	case SB_PAGERIGHT:
+		scrollPos = min(maxValue, scrollPos + 2);
+		break;
 	}
+
+	SetScrollPos(iparam, SB_CTL, scrollPos, TRUE);
+
+	value = stride * static_cast<float>(scrollPos);
+	SetDlgItemText(hwnd, index, to_wstring(value).c_str());
+
+	_dxapp->resetSimulationState();
+	
 }
 
 void Kobayashi::iWMTimer(HWND hwnd)

@@ -43,9 +43,9 @@ public:
 private :
 	enum class COM
 	{
+		DELTA_VALUE, ANISO_VALUE,
 		PLAY, STOP, NEXTSTEP,
 		TIME_TEXT, FRAME_TEXT,
-		ANISO_VALUE, ANISO_BAR
 	};
 
 	clock_t _simTime = 0;

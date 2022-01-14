@@ -56,14 +56,14 @@ private :
 	DirectX::XMINT2 _objectCount = { 0, 0 };
 
 	DX12App* _dxapp = nullptr;
-
 	float _updateFlag = true;
+
+	std::vector<HWND> _scrollbar;
 
 	//
 	inline int _INDEX(int i, int j) { return (i + _objectCount.x * j); };
 
 	std::vector<std::reference_wrapper<float>> _crystalVariable;
-
 	float _dx;
 	float _dy;
 	float _dt;

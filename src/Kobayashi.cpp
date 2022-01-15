@@ -102,19 +102,19 @@ void Kobayashi::_computeGradientLaplacian()
 				/ (3.0f * _dx * _dx);
 
 
-			if (_gradPhiX[_INDEX(i, j)] <= +EPS_F && _gradPhiX[_INDEX(i, j)] >= -EPS_F) // _gradPhiX[i][j] == 0.0f
-				if (_gradPhiY[_INDEX(i, j)] < -EPS_F)
+			if (_gradPhiX[_INDEX(i, j)] <= +FLT_EPSILON && _gradPhiX[_INDEX(i, j)] >= -FLT_EPSILON) // _gradPhiX[i][j] == 0.0f
+				if (_gradPhiY[_INDEX(i, j)] < -FLT_EPSILON)
 					_angl[_INDEX(i, j)] = -0.5f * PI_F;
-				else if (_gradPhiY[_INDEX(i, j)] > +EPS_F)
+				else if (_gradPhiY[_INDEX(i, j)] > +FLT_EPSILON)
 					_angl[_INDEX(i, j)] = 0.5f * PI_F;
 
-			if (_gradPhiX[_INDEX(i, j)] > +EPS_F)
-				if (_gradPhiY[_INDEX(i, j)] < -EPS_F)
+			if (_gradPhiX[_INDEX(i, j)] > +FLT_EPSILON)
+				if (_gradPhiY[_INDEX(i, j)] < -FLT_EPSILON)
 					_angl[_INDEX(i, j)] = 2.0f * PI_F + atan(_gradPhiY[_INDEX(i, j)] / _gradPhiX[_INDEX(i, j)]);
-				else if (_gradPhiY[_INDEX(i, j)] > +EPS_F)
+				else if (_gradPhiY[_INDEX(i, j)] > +FLT_EPSILON)
 					_angl[_INDEX(i, j)] = atan(_gradPhiY[_INDEX(i, j)] / _gradPhiX[_INDEX(i, j)]);
 
-			if (_gradPhiX[_INDEX(i, j)] < -EPS_F)
+			if (_gradPhiX[_INDEX(i, j)] < -FLT_EPSILON)
 				_angl[_INDEX(i, j)] = PI_F + atan(_gradPhiY[_INDEX(i, j)] / _gradPhiX[_INDEX(i, j)]);
 
 			

@@ -30,6 +30,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     // Window init
     Win32App winApp(500, 500);
     winApp.setWinName(L"Crystal Simulation");
+    winApp.setWinOffset(400, 100);
     winApp.initialize(hInstance, dxapp, crystalsim);
 
     return winApp.run();

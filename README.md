@@ -17,6 +17,9 @@ git submodule update --progress --init -- "ext/DXViewer"
 ```
 
 ## Gallery
+![gallery1](docs/images/gallery1.jpg)|![gallery2](docs/images/gallery2.jpg)
+:---:|:---:
+![gallery3](docs/images/gallery3.jpg)|![gallery4](docs/images/gallery4.jpg)
 
 ## Reference
 * <a name="footnote_1">[1]</a> Kobayashi, R. Modeling and numerical simulations of dendritic crystal growth. _Physica D: Nonlinear Phenomena 63_, 3-4 (1993), 410–423.

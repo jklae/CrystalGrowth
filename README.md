@@ -1,7 +1,7 @@
 # CrystalGrowth
 ## Overview
 
-CrystalGrowth is a simulation of dendritic crystal growth. Here, we implement the Kobayashi model<sup>[1](#footnote_1)</sup><sup>[2](#footnote_2)</sup> which introduced phase-field evolution for dendrite patterns. This simulation is rendered using <A href="https://github.com/frostsim/DXViewer">DXViewer</A>.
+CrystalGrowth is a simulation of dendritic crystal growth. Here, we implement the Kobayashi model<sup>[1](#footnote_1)</sup><sup>[2](#footnote_2)</sup> that introduces phase-field evolution for dendrite patterns. This simulation is rendered using <A href="https://github.com/frostsim/DXViewer">DXViewer</A>.
 
 ## Build
 This repo was developed in the following environment:

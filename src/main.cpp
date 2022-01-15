@@ -11,7 +11,7 @@ using namespace DXViewer::xmint3;
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
     // Simulation init
-    int x = 200;
+    int x = 250;
     int y = x;
     float timeStep = 0.0001f;
 
@@ -30,7 +30,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     // Window init
     Win32App winApp(500, 500);
     winApp.setWinName(L"Crystal Simulation");
-    winApp.setWinOffset(400, 100);
+    winApp.setWinOffset(400, 300);
     winApp.initialize(hInstance, dxapp, crystalsim);
 
     return winApp.run();

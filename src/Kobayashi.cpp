@@ -267,12 +267,12 @@ void Kobayashi::iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffe
 	XMFLOAT3 color;
 
 	XMFLOAT3 c0 = { 0.000'0000f, 0.000'0000f, 0.000'0000f };
-	XMFLOAT3 c1 = { 0.360'7843f, 1.000'0000f, 0.988'2353f };
-	XMFLOAT3 c2 = { 0.650'5490f, 1.000'0000f, 0.988'2353f };
+	XMFLOAT3 c1 = { 0.250'5490f, 0.500'0000f, 0.988'2353f };
+	XMFLOAT3 c2 = { 0.360'7843f, 1.000'0000f, 0.988'2353f };
 	XMFLOAT3 c3 = { 0.900'5490f, 1.000'0000f, 0.988'2353f };
 
-	float c1Boundary = 0.7f;
-	float c2Boundary = 0.95f;
+	float c1Boundary = 0.9f;
+	float c2Boundary = 0.99f;
 	float c3Boundary = 1.0f;
 	float ratio;
 

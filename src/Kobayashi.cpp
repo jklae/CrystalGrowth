@@ -2,6 +2,7 @@
 
 using namespace std;
 using namespace DirectX;
+using namespace DXViewer::xmfloat3;
 
 Kobayashi::Kobayashi(int x, int y, float timeStep)
 {
@@ -263,14 +264,35 @@ void Kobayashi::iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffe
 	int k = i % (int)(sqrt(size));
 
 	float phi = _phi[_INDEX(j, k)];
-	XMFLOAT4 color = {0.0f, 0.0f, 0.0f, 1.0f};
+	XMFLOAT3 color;
 
-	if (phi > 0.1f && phi <= 0.5f)
-		color = { 0.2f, 0.95f, 0.9f, 1.0f };
-	else if (phi > 0.5f)
-		color = { phi, phi, phi, 1.0f };
+	XMFLOAT3 c0 = { 0.000'0000f, 0.000'0000f, 0.000'0000f };
+	XMFLOAT3 c1 = { 0.360'7843f, 1.000'0000f, 0.988'2353f };
+	XMFLOAT3 c2 = { 0.650'5490f, 1.000'0000f, 0.988'2353f };
+	XMFLOAT3 c3 = { 0.900'5490f, 1.000'0000f, 0.988'2353f };
 
-	constantBuffer[i].color = color;
+	float c1Boundary = 0.7f;
+	float c2Boundary = 0.95f;
+	float c3Boundary = 1.0f;
+	float ratio;
+
+	if (phi <= c1Boundary)
+	{
+		ratio = phi * (1.0f / c1Boundary);
+		color = c0 * (1.0f - ratio) + c1 * ratio;
+	}
+	else if (phi > c1Boundary && phi <= c2Boundary)
+	{
+		ratio = (phi - c1Boundary) * (1.0f / (c2Boundary - c1Boundary));
+		color = c1 * (1.0f - ratio) + c2 * ratio;
+	}
+	else //if (phi > c2Boundary && phi <= c3Boundary)
+	{
+		ratio = (phi - c2Boundary) * (1.0f / (c3Boundary - c2Boundary));
+		color = c2 * (1.0f - ratio) + c3 * ratio;
+	}
+
+	constantBuffer[i].color = { color.x, color.y, color.z, 1.0f };
 }
 
 void Kobayashi::iDraw(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, int i)

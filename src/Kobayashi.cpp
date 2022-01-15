@@ -20,7 +20,7 @@ Kobayashi::Kobayashi(int x, int y, float timeStep)
 	_crystalParameter.push_back(CrystalParameter(_K, 10, 19, 0.1f));
 	_crystalParameter.push_back(CrystalParameter(_delta, 1, 9, 0.01f));
 	_crystalParameter.push_back(CrystalParameter(_anisotropy, 2, 8, 1.0f));
-	_crystalParameter.push_back(CrystalParameter(_alpha, 1, 9, 0.1f));
+	_crystalParameter.push_back(CrystalParameter(_alpha, 7, 12, 0.1f));
 	_crystalParameter.push_back(CrystalParameter(_gamma, 10, 20, 1.0f));
 	_crystalParameter.push_back(CrystalParameter(_tEq, 5, 15, 0.1f));
 

@@ -21,14 +21,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     DX12App* dxapp = new DX12App();
     dxapp->setCameraProperties(
         PROJ::ORTHOGRAPHIC,
-        static_cast<float>(max_element(crystalsim->iGetObjectCount())) * 0.0013f, // orthogonal distance
+        static_cast<float>(max_element(crystalsim->iGetObjectCount())) * 0.0022f, // orthogonal distance
         2.0f, 0.0f, 0.0f                                                       // radius, theta, phi
     );
     //dxapp->setCameraProperties(PROJ::PERSPECTIVE, 0.0f, 1.3f, 0.0f, 0.0f);
-    dxapp->setBackgroundColor(DirectX::Colors::LightSlateGray);
+    dxapp->setBackgroundColor(DirectX::Colors::Black);
 
     // Window init
-    Win32App winApp(800, 800);
+    Win32App winApp(500, 500);
     winApp.setWinName(L"Crystal Simulation");
     winApp.initialize(hInstance, dxapp, crystalsim);
 

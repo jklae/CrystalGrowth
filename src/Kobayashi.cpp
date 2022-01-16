@@ -9,15 +9,43 @@ Kobayashi::Kobayashi(int x, int y, float timeStep)
 	_objectCount = { x, y };
 
 	// The scroll position is stored separately as an integer due to the floating point precision.
-	_crystalParameter.push_back(CrystalParameter(_tau, 0.0001f, 0.0009f, 0.0001f, 3, 1, 9, 1));
-	_crystalParameter.push_back(CrystalParameter(_epsilonBar, 0.006f, 0.015f, 0.001f, 10, 6, 15, 1));
-	_crystalParameter.push_back(CrystalParameter(_mu, 0.5f, 1.4f, 0.1f, 10, 5, 14, 1));
-	_crystalParameter.push_back(CrystalParameter(_K, 1.0f, 1.9f, 0.1f, 16, 10, 19, 1));
-	_crystalParameter.push_back(CrystalParameter(_delta, 0.01f, 0.09f, 0.01f, 5, 1, 9, 1));
-	_crystalParameter.push_back(CrystalParameter(_anisotropy, 2.0f, 8.0f, 1.0f, 6, 2, 8, 1));
-	_crystalParameter.push_back(CrystalParameter(_alpha, 0.7f, 1.2f, 0.1f, 9, 7, 12, 1));
-	_crystalParameter.push_back(CrystalParameter(_gamma, 10.0f, 20.0f, 1.0f, 10, 10, 20, 1));
-	_crystalParameter.push_back(CrystalParameter(_tEq, 0.5f, 1.5f, 0.1f, 10, 5, 15, 1));
+	_crystalParameter.push_back(
+		CrystalParameter(
+										  //   value      min      max     stride
+			ScrollParameter<float&, float>(		  _tau, 0.0001f, 0.0009f, 0.0001f), 
+			ScrollParameter<int, int>	  (			 3,      1,       9,       1)));
+	_crystalParameter.push_back(
+		CrystalParameter(
+			ScrollParameter<float&, float>(_epsilonBar,  0.006f,  0.015f,  0.001f), 
+			ScrollParameter<int, int>	  (         10,      6,      15,       1)));
+	_crystalParameter.push_back(
+		CrystalParameter(
+			ScrollParameter<float&, float>(		   _mu,    0.5f,    1.4f,    0.1f), 
+			ScrollParameter<int, int>	  (			10,      5,      14,       1)));
+	_crystalParameter.push_back(
+		CrystalParameter(
+			ScrollParameter<float&, float>(			_K,    1.0f,    1.9f,    0.1f), 
+			ScrollParameter<int, int>	  (			16,    10,      19,        1)));
+	_crystalParameter.push_back(
+		CrystalParameter(
+			ScrollParameter<float&, float>(		_delta,   0.01f,   0.09f,   0.01f), 
+			ScrollParameter<int, int>	  (		     5,      1,       9,       1)));
+	_crystalParameter.push_back(
+		CrystalParameter(
+			ScrollParameter<float&, float>(_anisotropy,    2.0f,    8.0f,      1.0f), 
+			ScrollParameter<int, int>	  (          6,    2,       8,         1)));
+	_crystalParameter.push_back(
+		CrystalParameter(
+			ScrollParameter<float&, float>(		_alpha,    0.7f,    1.2f,    0.1f), 
+			ScrollParameter<int, int>	  (			 9,      7,     12,        1)));
+	_crystalParameter.push_back(
+		CrystalParameter(
+			ScrollParameter<float&, float>(		_gamma,   10.0f,   20.0f,      1.0f), 
+			ScrollParameter<int, int>	  (		    10,   10,      20,         1)));
+	_crystalParameter.push_back(
+		CrystalParameter(
+			ScrollParameter<float&, float>(		  _tEq,    0.5f,    1.5f,    0.1f), 
+			ScrollParameter<int, int>	  (		    10,      5,     15,        1)));
 
 	_dx = 0.03f;
 	_dy = 0.03f;
@@ -34,26 +62,26 @@ Kobayashi::~Kobayashi()
 void Kobayashi::_parameterInit()
 {
 	//
-	_tau = 0.0003f;
+	_tau		= 0.0003f;
 	_epsilonBar = 0.010f;		// Mean of epsilon. scaling factor that determines how much the microscopic front is magnified
-	_mu = 1.0f;
-	_K = 1.6f;					// Latent heat 
-	_delta = 0.05f;				// Strength of anisotropy (speed of growth in preferred directions)
+	_mu		    = 1.0f;
+	_K			= 1.6f;			// Latent heat 
+	_delta		= 0.05f;		// Strength of anisotropy (speed of growth in preferred directions)
 	_anisotropy = 6.0f;			// Degree of anisotropy
-	_alpha = 0.9f;
-	_gamma = 10.0f;
-	_tEq = 1.0f;
+	_alpha		= 0.9f;
+	_gamma		= 10.0f;
+	_tEq		= 1.0f;
 	//
 
-	_crystalParameter[static_cast<int>(COM::TAU)].value_int = 3;
-	_crystalParameter[static_cast<int>(COM::EPLSILONBAR)].value_int = 10;
-	_crystalParameter[static_cast<int>(COM::MU)].value_int = 10;
-	_crystalParameter[static_cast<int>(COM::K)].value_int = 16;
-	_crystalParameter[static_cast<int>(COM::DELTA)].value_int = 5;
-	_crystalParameter[static_cast<int>(COM::ANISOTROPY)].value_int = 6;
-	_crystalParameter[static_cast<int>(COM::ALPHA)].value_int = 9;
-	_crystalParameter[static_cast<int>(COM::GAMMA)].value_int = 10;
-	_crystalParameter[static_cast<int>(COM::TEQ)].value_int = 10;
+	_crystalParameter[static_cast<int>(COM::TAU)].param_i.value			= 3;
+	_crystalParameter[static_cast<int>(COM::EPLSILONBAR)].param_i.value = 10;
+	_crystalParameter[static_cast<int>(COM::MU)].param_i.value			= 10;
+	_crystalParameter[static_cast<int>(COM::K)].param_i.value			= 16;
+	_crystalParameter[static_cast<int>(COM::DELTA)].param_i.value		= 5;
+	_crystalParameter[static_cast<int>(COM::ANISOTROPY)].param_i.value  = 6;
+	_crystalParameter[static_cast<int>(COM::ALPHA)].param_i.value		= 9;
+	_crystalParameter[static_cast<int>(COM::GAMMA)].param_i.value		= 10;
+	_crystalParameter[static_cast<int>(COM::TEQ)].param_i.value			= 10;
 }
 
 void Kobayashi::_vectorInit()
@@ -453,9 +481,9 @@ void Kobayashi::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 	
 	for (int i = 0; i <= static_cast<int>(COM::TEQ); i++)
 	{
-		int minValue = _crystalParameter[i].minVal_int;
-		int maxValue = _crystalParameter[i].maxVal_int;
-		int value = _crystalParameter[i].value_int;
+		int minValue = _crystalParameter[i].param_i.minVal;
+		int maxValue = _crystalParameter[i].param_i.maxVal;
+		int value = _crystalParameter[i].param_i.value;
 		HWND scrollbar = _crystalParameter[i].scrollbar;
 
 		SetScrollRange(scrollbar, SB_CTL, minValue, maxValue, TRUE);
@@ -476,9 +504,9 @@ void Kobayashi::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HI
 
 			for (int i = 0; i <= static_cast<int>(COM::TEQ); i++)
 			{
-				float& value = _crystalParameter[i].value;
-				float stride = _crystalParameter[i].stride;
-				int value_int = _crystalParameter[i].value_int;
+				float& value = _crystalParameter[i].param_f.value;
+				float stride = _crystalParameter[i].param_f.stride;
+				int value_int = _crystalParameter[i].param_i.value;
 				HWND scrollbar = _crystalParameter[i].scrollbar;
 
 				SetScrollPos(scrollbar, SB_CTL, value_int, TRUE);
@@ -537,12 +565,12 @@ void Kobayashi::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hI
 	else
 		index = static_cast<int>(COM::TEQ);
 
-	float& value = _crystalParameter[index].value;
-	int minValue_int = _crystalParameter[index].minVal_int;
-	int maxValue_int = _crystalParameter[index].maxVal_int;
-	float stride = _crystalParameter[index].stride;
-	int& value_int = _crystalParameter[index].value_int;
-	int stride_int = _crystalParameter[index].stride_int;
+	float& value = _crystalParameter[index].param_f.value;
+	int minValue_int = _crystalParameter[index].param_i.minVal;
+	int maxValue_int = _crystalParameter[index].param_i.maxVal;
+	float stride = _crystalParameter[index].param_f.stride;
+	int& value_int = _crystalParameter[index].param_i.value;
+	int stride_int = _crystalParameter[index].param_i.stride;
 
 	switch (LOWORD(wParam))
 	{

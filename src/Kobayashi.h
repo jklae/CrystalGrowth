@@ -2,6 +2,29 @@
 #include "Win32App.h"// This includes ISimulation.h.
 					  // Win32App is required in main().
 
+template <typename T, typename U>
+struct ScrollParameter
+{
+	ScrollParameter(T valu, U minVa, U maxVa, U strid)
+		:value(valu), minVal(minVa), maxVal(maxVa), stride(strid) {}
+	T value;
+	U minVal;
+	U maxVal;
+	U stride;
+};
+
+struct CrystalParameter
+{
+	CrystalParameter(ScrollParameter<float&, float> param_float, ScrollParameter<int, int> param_int)
+		:param_f(param_float), param_i(param_int) {}
+
+	ScrollParameter<float&, float> param_f;
+	ScrollParameter<int, int> param_i;
+
+	HWND scrollbar = nullptr;
+};
+
+
 class Kobayashi : public ISimulation
 {
 public:
@@ -62,34 +85,6 @@ private :
 
 	//
 	inline int _INDEX(int i, int j) { return (i + _objectCount.x * j); };
-
-	template <typename T, typename U>
-	struct ScrollParameter
-	{
-		T value;
-		U minVal;
-		U maxVal;
-		U stride;
-	};
-
-	struct CrystalParameter
-	{
-		CrystalParameter(float& valu, float minVa, float maxVa, float strid,
-			int valu_int, int minVa_int, int maxVa_int, int strid_int)
-		: value(valu), minVal(minVa), maxVal(maxVa), stride(strid),
-			value_int(valu_int), minVal_int(minVa_int), maxVal_int(maxVa_int), stride_int(strid_int) {}
-		float& value;
-		float minVal;
-		float maxVal;
-		float stride;
-
-		int value_int;
-		int minVal_int;
-		int maxVal_int;
-		int stride_int;
-
-		HWND scrollbar = nullptr;
-	};
 
 	std::vector<CrystalParameter> _crystalParameter;
 	float _dx;

@@ -11,41 +11,52 @@ Kobayashi::Kobayashi(int x, int y, float timeStep)
 	// The scroll position is stored separately as an integer due to the floating point precision.
 	_crystalParameter.push_back(
 		CrystalParameter(
-										  //   value      min      max     stride
+								//  float  :   value      min      max     stride
+								//  int	   :     -         -        -        -
+								//		       float / int
 			ScrollParameter<float&, float>(		  _tau, 0.0001f, 0.0009f, 0.0001f), 
-			ScrollParameter<int, int>	  (			 3,      1,       9,       1)));
+			ScrollParameter<int, int>	  (			 3,      1,       9,       1 ),
+											    0.0001f));
 	_crystalParameter.push_back(
 		CrystalParameter(
 			ScrollParameter<float&, float>(_epsilonBar,  0.006f,  0.015f,  0.001f), 
-			ScrollParameter<int, int>	  (         10,      6,      15,       1)));
+			ScrollParameter<int, int>	  (         10,      6,      15,       1 ),
+												 0.001f));
 	_crystalParameter.push_back(
 		CrystalParameter(
 			ScrollParameter<float&, float>(		   _mu,    0.5f,    1.4f,    0.1f), 
-			ScrollParameter<int, int>	  (			10,      5,      14,       1)));
+			ScrollParameter<int, int>	  (			10,      5,      14,       1 ),
+												   0.1f));
 	_crystalParameter.push_back(
 		CrystalParameter(
 			ScrollParameter<float&, float>(			_K,    1.0f,    1.9f,    0.1f), 
-			ScrollParameter<int, int>	  (			16,    10,      19,        1)));
+			ScrollParameter<int, int>	  (			16,    10,      19,        1 ),
+												   0.1f));
 	_crystalParameter.push_back(
 		CrystalParameter(
 			ScrollParameter<float&, float>(		_delta,   0.01f,   0.09f,   0.01f), 
-			ScrollParameter<int, int>	  (		     5,      1,       9,       1)));
+			ScrollParameter<int, int>	  (		     5,      1,       9,       1 ),
+												  0.01f));
 	_crystalParameter.push_back(
 		CrystalParameter(
 			ScrollParameter<float&, float>(_anisotropy,    2.0f,    8.0f,      1.0f), 
-			ScrollParameter<int, int>	  (          6,    2,       8,         1)));
+			ScrollParameter<int, int>	  (          6,    2,       8,         1   ), 
+												   1.0f));
 	_crystalParameter.push_back(
 		CrystalParameter(
 			ScrollParameter<float&, float>(		_alpha,    0.7f,    1.2f,    0.1f), 
-			ScrollParameter<int, int>	  (			 9,      7,     12,        1)));
+			ScrollParameter<int, int>	  (			 9,      7,     12,        1 ),
+												   0.1f));
 	_crystalParameter.push_back(
 		CrystalParameter(
 			ScrollParameter<float&, float>(		_gamma,   10.0f,   20.0f,      1.0f), 
-			ScrollParameter<int, int>	  (		    10,   10,      20,         1)));
+			ScrollParameter<int, int>	  (		    10,   10,      20,         1   ),
+												   1.0f));
 	_crystalParameter.push_back(
 		CrystalParameter(
 			ScrollParameter<float&, float>(		  _tEq,    0.5f,    1.5f,    0.1f), 
-			ScrollParameter<int, int>	  (		    10,      5,     15,        1)));
+			ScrollParameter<int, int>	  (		    10,      5,     15,        1 ),
+												   0.1f));
 
 	_dx = 0.03f;
 	_dy = 0.03f;
@@ -571,11 +582,13 @@ void Kobayashi::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hI
 	float stride = _crystalParameter[index].param_f.stride;
 	int& value_int = _crystalParameter[index].param_i.value;
 	int stride_int = _crystalParameter[index].param_i.stride;
+	float ratio = _crystalParameter[index].ratio;
 
 	switch (LOWORD(wParam))
 	{
 	case SB_THUMBTRACK:
-		//scrollPos = HIWORD(wParam);
+		value_int = HIWORD(wParam);
+		value = static_cast<float>(value_int) * ratio;
 		break;
 
 	case SB_LINELEFT:

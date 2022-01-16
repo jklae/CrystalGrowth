@@ -15,11 +15,15 @@ struct ScrollParameter
 
 struct CrystalParameter
 {
-	CrystalParameter(ScrollParameter<float&, float> param_float, ScrollParameter<int, int> param_int)
-		:param_f(param_float), param_i(param_int) {}
+	CrystalParameter(
+		ScrollParameter<float&, float> param_float, 
+		ScrollParameter<int, int> param_int,
+		float rati)
+		:param_f(param_float), param_i(param_int), ratio(rati) {}
 
 	ScrollParameter<float&, float> param_f;
 	ScrollParameter<int, int> param_i;
+	float ratio;
 
 	HWND scrollbar = nullptr;
 };

@@ -63,14 +63,31 @@ private :
 	//
 	inline int _INDEX(int i, int j) { return (i + _objectCount.x * j); };
 
+	template <typename T, typename U>
+	struct ScrollParameter
+	{
+		T value;
+		U minVal;
+		U maxVal;
+		U stride;
+	};
+
 	struct CrystalParameter
 	{
-		CrystalParameter(float& valu, int minVa, int maxVa, float strid)
-		: value(valu), minVal(minVa), maxVal(maxVa), stride(strid) {}
+		CrystalParameter(float& valu, float minVa, float maxVa, float strid,
+			int valu_int, int minVa_int, int maxVa_int, int strid_int)
+		: value(valu), minVal(minVa), maxVal(maxVa), stride(strid),
+			value_int(valu_int), minVal_int(minVa_int), maxVal_int(maxVa_int), stride_int(strid_int) {}
 		float& value;
-		int minVal;
-		int maxVal;
+		float minVal;
+		float maxVal;
 		float stride;
+
+		int value_int;
+		int minVal_int;
+		int maxVal_int;
+		int stride_int;
+
 		HWND scrollbar = nullptr;
 	};
 

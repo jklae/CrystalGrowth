@@ -292,10 +292,10 @@ void Kobayashi::iCreateObject(std::vector<ConstantBuffer>& constantBuffer)
 		{
 			// Position
 			XMFLOAT2 pos = XMFLOAT2(
-				(float)i,
-				(float)j);
+				static_cast<float>(i),
+				static_cast<float>(j));
 
-			struct ConstantBuffer objectCB;
+			ConstantBuffer objectCB;
 			objectCB.world = DXViewer::util::transformMatrix(pos.x, pos.y, 0.0f, 1.0f);
 			objectCB.worldViewProj = DXViewer::util::transformMatrix(0.0f, 0.0f, 0.0f);
 			objectCB.transInvWorld = DXViewer::util::transformMatrix(0.0f, 0.0f, 0.0f);

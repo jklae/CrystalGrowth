@@ -22,6 +22,6 @@ git submodule update --progress --init -- "ext/DXViewer"
 ![gallery3](docs/images/gallery3.jpg)|![gallery4](docs/images/gallery4.jpg)
 
 ## Reference
-* <a name="footnote_1">[1]</a> Kobayashi, R. Modeling and numerical simulations of dendritic crystal growth. _Physica D: Nonlinear Phenomena 63_, 3-4 (1993), 410–423.
-* <a name="footnote_2">[2]</a> Sanal, R. Numerical simulation of dendritic crystal growth using phase field method and investigating the effects of different physical parameter on the growth of the dendrite. _arXiv preprint arXiv:1412.3197_ (2014).
+* <a name="footnote_1">[1]</a> Kobayashi, Ryo. "Modeling and numerical simulations of dendritic crystal growth." _Physica D: Nonlinear Phenomena_ 63.3-4 (1993): 410-423.
+* <a name="footnote_2">[2]</a> Sanal, Rahul. "Numerical simulation of dendritic crystal growth using phase field method and investigating the effects of different physical parameter on the growth of the dendrite." _arXiv preprint arXiv:1412.3197_ (2014). (2014).
 

@@ -24,8 +24,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
         static_cast<float>(max_element(crystalsim->iGetObjectCount())) * 0.0022f, // orthogonal distance
         2.0f, 0.0f, 0.0f                                                       // radius, theta, phi
     );
-    //dxapp->setCameraProperties(PROJ::PERSPECTIVE, 0.0f, 1.3f, 0.0f, 0.0f);
+    //dxapp->setCameraProperties(PROJ::PERSPECTIVE, 1.3f, 0.0f, 0.0f);
     dxapp->setBackgroundColor(DirectX::Colors::Black);
+    //dxapp->setLightPosition(1.0f, 1.0f, 1.0f);
 
     // Window init
     Win32App winApp(500, 500);

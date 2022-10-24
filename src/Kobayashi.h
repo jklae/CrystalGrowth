@@ -42,8 +42,8 @@ public:
 	void iResetSimulationState(std::vector<ConstantBuffer>& constantBuffer) override;
 
 	// Mesh methods
-	std::vector<Vertex>& iGetVertice() override;
-	std::vector<unsigned int>& iGetIndice() override;
+	std::vector<Vertex>& iGetVertices() override;
+	std::vector<unsigned int>& iGetIndices() override;
 	UINT iGetVertexBufferSize() override;
 	UINT iGetIndexBufferSize() override;
 

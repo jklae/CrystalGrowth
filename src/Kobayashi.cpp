@@ -250,7 +250,7 @@ void Kobayashi::iResetSimulationState(std::vector<ConstantBuffer>& constantBuffe
 
 
 // Mesh methods
-std::vector<Vertex>& Kobayashi::iGetVertice()
+std::vector<Vertex>& Kobayashi::iGetVertices()
 {
 	_vertices.clear();
 
@@ -262,7 +262,7 @@ std::vector<Vertex>& Kobayashi::iGetVertice()
 	return _vertices;
 }
 
-std::vector<unsigned int>& Kobayashi::iGetIndice()
+std::vector<unsigned int>& Kobayashi::iGetIndices()
 {
 	_indices.clear();
 
